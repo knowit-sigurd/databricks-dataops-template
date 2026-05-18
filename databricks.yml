@@ -19,6 +19,7 @@ workspace:
   root_path: /Shared/databricks-dataops-template/${bundle.target}/${bundle.git.branch}
 
 python:
+  venv_path: .venv
   mutators:
     - mutators/tags.py
 
