@@ -28,7 +28,7 @@ jobs:
 
       - uses: databricks/setup-cli@main
 
-      - uses: astral-sh/setup-uv@v4
+      - uses: astral-sh/setup-uv@v7
 
       - name: Install dependencies
         run: uv sync
