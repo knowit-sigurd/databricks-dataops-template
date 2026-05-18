@@ -1,0 +1,8 @@
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.getOrCreate()
+
+catalog = dbutils.widgets.get("catalog")
+target_schema = dbutils.widgets.get("target_schema")
+
+ops_table = f"{catalog}.{target_schema}.ops_contract_check_log"
