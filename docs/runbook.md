@@ -43,13 +43,13 @@ This calls `databricks bundle destroy` with `--auto-approve`. It removes the pip
 
 ## Monitoring pipeline runs
 
-Pipeline run history is visible in the Databricks UI under **Delta Live Tables**. Filter by catalog `dataops` and schema `dev` / `pr_<N>` / `prod`.
+Pipeline run history is visible in the Databricks UI under **Delta Live Tables**. Filter by catalog `dataops_template` and schema `dev` / `pr_<N>` / `prod`.
 
 Ops tables (written by the validate tasks) are queryable once Pass 2 is complete:
 
 ```sql
-SELECT * FROM dataops.prod.ops_pipeline_run_log ORDER BY run_id DESC LIMIT 20;
-SELECT * FROM dataops.prod.ops_contract_check_log ORDER BY checked_at DESC LIMIT 20;
+SELECT * FROM dataops_template.prod.ops_pipeline_run_log ORDER BY run_id DESC LIMIT 20;
+SELECT * FROM dataops_template.prod.ops_contract_check_log ORDER BY checked_at DESC LIMIT 20;
 ```
 
 > **Pass 2 stub.** These tables do not exist yet. The validate task scripts are stubs.

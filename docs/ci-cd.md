@@ -74,7 +74,7 @@ All CI logic is in `Makefile` targets. When ADO pipelines are added, they will c
 When implemented, the ADO setup will require:
 
 - A service connection to the Databricks workspace
-- A variable group with `DATABRICKS_HOST`, `DATABRICKS_TOKEN`, `DATABRICKS_SP_CLIENT_ID`
+- A variable group with `DATABRICKS_HOST`, `DATABRICKS_CLIENT_ID`, `DATABRICKS_CLIENT_SECRET`, `DATABRICKS_SP_CLIENT_ID`
 - Pipeline YAML files in `ci/`
 
 See `ci/README.md` for the current placeholder.

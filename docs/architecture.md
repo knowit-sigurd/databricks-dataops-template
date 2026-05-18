@@ -3,7 +3,7 @@
 ## Data flow
 
 ```
-UC Volume (/Volumes/dataops/<schema>/landing/)
+UC Volume (/Volumes/dataops_template/<schema>/landing/)
     │
     ├── customers/  ──→  customers_pipeline  ──→  customers_bronze
     │                                         ──→  customers_silver

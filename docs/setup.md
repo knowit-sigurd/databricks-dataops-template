@@ -39,13 +39,12 @@ Expected: your workspace URL and username. If it fails, check `~/.databrickscfg`
 
 ```ini
 [DEFAULT]
-host  = https://<workspace>.cloud.databricks.com   # or azuredatabricks.net
-token = dapi...
+host       = https://<workspace>.cloud.databricks.com   # or azuredatabricks.net
+client_id  = <service-principal-client-id>
+client_secret = <service-principal-client-secret>
 ```
 
-The devcontainer mounts `~/.databrickscfg` from the host — configure it on the host, not inside the container.
-
-The `DATABRICKS_CONFIG_PROFILE` env var in `devcontainer.json` points to `sigurd.lislegaard@knowit.no`. Adjust for your own profile name, or remove it to use `[DEFAULT]`.
+The devcontainer mounts `~/.databrickscfg` from the host — configure it on the host, not inside the container. Adjust the profile name to match your `DATABRICKS_CONFIG_PROFILE` env var, or use `[DEFAULT]`.
 
 ## 3. Run the tests
 
