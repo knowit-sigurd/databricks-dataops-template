@@ -1,10 +1,17 @@
-.PHONY: lint test deploy-dev deploy-pr destroy-pr deploy-prod run-dev run-pr run-prod
+.PHONY: lint test pipeline-run deploy-dev deploy-pr destroy-pr deploy-prod run-dev run-pr run-prod
+
+PIPELINE_PYTHON := $(shell pwd)/.venv/bin/python3
+PIPELINE_RUNNER := $(shell pwd)/.venv/bin/spark-pipelines
 
 lint:
 	uv run ruff check src/ tests/
 
 test:
 	uv run pytest tests/
+
+pipeline-run:
+	PYSPARK_DRIVER_PYTHON=$(PIPELINE_PYTHON) PYSPARK_PYTHON=$(PIPELINE_PYTHON) PYTHONPATH=$(shell pwd)/src \
+		$(PIPELINE_RUNNER) run --spec local-dev/$(PIPELINE).yml
 
 deploy-dev:
 	databricks bundle deploy --target dev

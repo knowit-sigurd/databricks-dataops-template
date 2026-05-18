@@ -1,0 +1,7 @@
+name: customers_pipeline_local
+storage: file:///tmp/sdp/customers
+libraries:
+  - glob:
+      include: ../src/data_product/pipelines/customers_pipeline.py
+configuration:
+  quality_mode: drop

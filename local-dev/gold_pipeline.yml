@@ -1,0 +1,7 @@
+name: gold_pipeline_local
+storage: file:///tmp/sdp/gold
+libraries:
+  - glob:
+      include: ../src/data_product/pipelines/gold_pipeline.py
+configuration:
+  quality_mode: drop
