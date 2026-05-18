@@ -3,7 +3,7 @@ name = "databricks-dataops-template"
 version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
-    "databricks-sdk>=0.106.0",
+    "databricks-sdk>=0.109.0",
     "pyspark[pipelines]>=4.1.1",
     "databricks-bundles>=0.299.2",
 ]
@@ -11,8 +11,8 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pandas>=3.0.3",
-    "pytest>=8.0.0",
-    "ruff>=0.4.0",
+    "pytest>=9.0.3",
+    "ruff>=0.15.13",
 ]
 
 [tool.uv]

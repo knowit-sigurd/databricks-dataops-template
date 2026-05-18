@@ -24,14 +24,14 @@ jobs:
       DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
       DATABRICKS_SP_CLIENT_ID: ${{ secrets.DATABRICKS_SP_CLIENT_ID }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Fix detached HEAD
         run: git checkout -B ${{ github.ref_name }}
 
       - uses: databricks/setup-cli@main
 
-      - uses: astral-sh/setup-uv@v4
+      - uses: astral-sh/setup-uv@v7
 
       - name: Install dependencies
         run: uv sync
