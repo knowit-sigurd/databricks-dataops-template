@@ -32,4 +32,4 @@ run-pr:
 	databricks bundle run --target pr --var target_schema=pr_$(PR_NUMBER) data_product_operational_job
 
 run-prod:
-	databricks bundle run --target prod data_product_operational_job
+	databricks bundle run --target prod --var sp_client_id=$(DATABRICKS_SP_CLIENT_ID) data_product_operational_job
