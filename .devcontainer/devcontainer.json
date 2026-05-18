@@ -1,0 +1,32 @@
+{
+  "name": "Databricks DataOps Template",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace/databricks-dataops-template,type=bind,consistency=cached",
+  "workspaceFolder": "/workspace/databricks-dataops-template",
+  "mounts": [
+    "source=${localEnv:HOME}/.databrickscfg,target=/home/app/.databrickscfg,type=bind,readonly",
+    "source=${localEnv:HOME}/.databricks,target=/home/app/.databricks,type=bind",
+    "source=${localEnv:HOME}/.claude,target=/home/app/.claude,type=bind"
+  ],
+  "containerEnv": {
+    "DATABRICKS_CONFIG_PROFILE": "sigurd.lislegaard@knowit.no",
+    "DATABRICKS_WAREHOUSE_ID": "0bd7cc78c0abd6d9",
+    "SPARK_CONF_DIR": "/workspace/databricks-dataops-template/.devcontainer/spark-conf"
+  },
+  "postStartCommand": "uv sync && (grep -qF '.venv/bin/activate' ~/.bashrc || echo 'source /workspace/databricks-dataops-template/.venv/bin/activate' >> ~/.bashrc) && bash .devcontainer/scripts/check-databricks-config.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "usernamehw.errorlens",
+        "anthropic.claude-code",
+        "ms-vscode.azure-repos",
+        "ms-azure-devops.azure-pipelines"
+      ]
+    }
+  }
+}
