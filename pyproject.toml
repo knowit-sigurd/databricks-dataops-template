@@ -15,8 +15,12 @@ dev = [
     "ruff>=0.15.13",
 ]
 
-[tool.uv]
-package = false
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/data_product"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

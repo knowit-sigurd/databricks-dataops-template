@@ -10,3 +10,6 @@ resources:
       libraries:
         - file:
             path: ../src/data_product/pipelines/customers_pipeline.py
+      environment:
+        dependencies:
+          - --editable ${workspace.file_path}

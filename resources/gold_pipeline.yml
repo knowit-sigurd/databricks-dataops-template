@@ -8,3 +8,6 @@ resources:
       libraries:
         - file:
             path: ../src/data_product/pipelines/gold_pipeline.py
+      environment:
+        dependencies:
+          - --editable ${workspace.file_path}
