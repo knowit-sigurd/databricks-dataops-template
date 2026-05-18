@@ -1,0 +1,12 @@
+resources:
+  pipelines:
+    customers_pipeline:
+      name: "[${var.catalog}] customers_pipeline"
+      catalog: ${var.catalog}
+      target: ${var.target_schema}
+      serverless: true
+      configuration:
+        quality_mode: ${var.quality_mode}
+      libraries:
+        - notebook:
+            path: ./src/data_product/pipelines/customers_pipeline.py

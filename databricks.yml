@@ -1,0 +1,53 @@
+bundle:
+  name: databricks-dataops-template
+
+variables:
+  catalog:
+    description: Unity Catalog catalog name
+    default: dataops
+  target_schema:
+    description: "Schema for this deployment. For pr target, pass --var target_schema=pr_<PR_NUMBER>"
+    default: dev
+  sp_client_id:
+    description: Service principal application UUID for prod run_as
+    default: ""
+  quality_mode:
+    description: "Expectation mode for business_invalid rules: drop (dev/pr) or fail (prod)"
+    default: drop
+
+workspace:
+  root_path: /Shared/databricks-dataops-template/${bundle.target}/${bundle.git.branch}
+
+python:
+  mutators:
+    - mutators/tags.py
+
+presets:
+  tags:
+    project: databricks-dataops-template
+    target: ${bundle.target}
+    git_branch: ${bundle.git.branch}
+
+include:
+  - resources/*.yml
+
+targets:
+  dev:
+    mode: development
+    default: true
+    variables:
+      target_schema: dev
+      quality_mode: drop
+
+  pr:
+    mode: development
+    variables:
+      quality_mode: drop
+
+  prod:
+    mode: production
+    variables:
+      target_schema: prod
+      quality_mode: fail
+    run_as:
+      service_principal_name: ${var.sp_client_id}

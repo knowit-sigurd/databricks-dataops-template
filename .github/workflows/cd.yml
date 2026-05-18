@@ -1,0 +1,40 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "README.md"
+      - ".github/PULL_REQUEST_TEMPLATE.md"
+
+jobs:
+  deploy-prod:
+    name: Deploy prod
+    runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]'
+    concurrency:
+      group: deploy-prod
+      cancel-in-progress: false
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      DATABRICKS_SP_CLIENT_ID: ${{ secrets.DATABRICKS_SP_CLIENT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fix detached HEAD
+        run: git checkout -B ${{ github.ref_name }}
+
+      - uses: databricks/setup-cli@main
+
+      - uses: astral-sh/setup-uv@v4
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Deploy prod
+        run: make deploy-prod
+
+      - name: Run operational job
+        run: make run-prod
