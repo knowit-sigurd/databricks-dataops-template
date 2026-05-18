@@ -9,4 +9,4 @@ resources:
         quality_mode: ${var.quality_mode}
       libraries:
         - notebook:
-            path: ./src/data_product/pipelines/orders_pipeline.py
+            path: ../src/data_product/pipelines/orders_pipeline.py

@@ -7,4 +7,4 @@ resources:
       serverless: true
       libraries:
         - notebook:
-            path: ./src/data_product/pipelines/gold_pipeline.py
+            path: ../src/data_product/pipelines/gold_pipeline.py
