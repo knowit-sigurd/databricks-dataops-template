@@ -28,7 +28,7 @@ Do not propose alternatives to these.
 
 **Pipeline library type is `file:`, not `notebook:`** — `.py` source files in pipeline resources use `libraries: - file: path: ...`. `notebook:` expects an `.ipynb` or Databricks notebook format and will reject plain Python files.
 
-**`${var.catalog}` everywhere.** Default `dataops`. No hardcoded catalog name.
+**`${var.catalog}` everywhere.** Default `dataops_template`. No hardcoded catalog name.
 
 **Three targets:** `dev`, `pr`, `prod`. PR schema: `pr_${PR_NUMBER}`. Per-PR `root_path` isolation is non-negotiable.
 

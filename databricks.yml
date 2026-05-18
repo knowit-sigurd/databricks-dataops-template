@@ -4,7 +4,7 @@ bundle:
 variables:
   catalog:
     description: Unity Catalog catalog name
-    default: dataops
+    default: dataops_template
   target_schema:
     description: "Schema for this deployment. For pr target, pass --var target_schema=pr_<PR_NUMBER>"
     default: dev
