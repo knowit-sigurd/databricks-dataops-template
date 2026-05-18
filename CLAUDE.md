@@ -26,6 +26,8 @@ Do not propose alternatives to these.
 
 **`from pyspark import pipelines as dp`** — the canonical import alias. Never `import dlt` (legacy). Never `import pyspark.pipelines as dlt` (non-standard). Confirmed working on runtime dlt:17.3.10.
 
+**Pipeline library type is `file:`, not `notebook:`** — `.py` source files in pipeline resources use `libraries: - file: path: ...`. `notebook:` expects an `.ipynb` or Databricks notebook format and will reject plain Python files.
+
 **`${var.catalog}` everywhere.** Default `dataops`. No hardcoded catalog name.
 
 **Three targets:** `dev`, `pr`, `prod`. PR schema: `pr_${PR_NUMBER}`. Per-PR `root_path` isolation is non-negotiable.

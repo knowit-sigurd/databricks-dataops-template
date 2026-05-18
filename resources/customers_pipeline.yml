@@ -8,5 +8,5 @@ resources:
       configuration:
         quality_mode: ${var.quality_mode}
       libraries:
-        - notebook:
+        - file:
             path: ../src/data_product/pipelines/customers_pipeline.py
