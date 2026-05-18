@@ -4,7 +4,7 @@ bundle:
 variables:
   catalog:
     description: Unity Catalog catalog name
-    default: dataops
+    default: dataops_template
   target_schema:
     description: "Schema for this deployment. For pr target, pass --var target_schema=pr_<PR_NUMBER>"
     default: dev
@@ -16,11 +16,13 @@ variables:
     default: drop
 
 workspace:
-  root_path: /Shared/databricks-dataops-template/${bundle.target}/${bundle.git.branch}
+  root_path: ~/databricks-dataops-template/${bundle.target}/${bundle.git.branch}
 
 python:
+  venv_path: .venv
   mutators:
-    - mutators/tags.py
+    - mutators.tags:tag_pipeline
+    - mutators.tags:tag_job
 
 presets:
   tags:
@@ -46,6 +48,8 @@ targets:
 
   prod:
     mode: production
+    workspace:
+      root_path: /Shared/databricks-dataops-template/${bundle.git.branch}
     variables:
       target_schema: prod
       quality_mode: fail

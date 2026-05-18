@@ -1,0 +1,7 @@
+name: orders_pipeline_local
+storage: file:///tmp/sdp/orders
+libraries:
+  - glob:
+      include: ../src/data_product/pipelines/orders_pipeline.py
+configuration:
+  quality_mode: drop

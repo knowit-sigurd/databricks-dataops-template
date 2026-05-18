@@ -7,6 +7,8 @@ on:
       - "docs/**"
       - "README.md"
       - ".github/PULL_REQUEST_TEMPLATE.md"
+      - "pyproject.toml"
+      - "uv.lock"
 
 jobs:
   deploy-prod:
@@ -18,7 +20,8 @@ jobs:
       cancel-in-progress: false
     env:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
+      DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
       DATABRICKS_SP_CLIENT_ID: ${{ secrets.DATABRICKS_SP_CLIENT_ID }}
     steps:
       - uses: actions/checkout@v6

@@ -76,9 +76,9 @@ Pipeline files import from domains but contain no business logic. Tests import o
 
 | Target | Schema | `quality_mode` | `run_as` | `root_path` |
 |---|---|---|---|---|
-| `dev` | `dev` | `drop` | caller | `/Shared/.../dev/<branch>` |
-| `pr` | `pr_<N>` | `drop` | caller | `/Shared/.../pr/<branch>` |
-| `prod` | `prod` | `fail` | SP (app UUID) | `/Shared/.../prod/<branch>` |
+| `dev` | `dev` | `drop` | caller | `~/.../dev/<branch>` |
+| `pr` | `pr_<N>` | `drop` | caller | `~/.../pr/<branch>` |
+| `prod` | `prod` | `fail` | SP (app UUID) | `/Shared/.../<branch>` |
 
 Per-PR root path isolation is enforced by including `${bundle.git.branch}` in the workspace `root_path`.
 

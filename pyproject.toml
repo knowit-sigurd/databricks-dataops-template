@@ -10,6 +10,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "pandas>=3.0.3",
     "pytest>=9.0.3",
     "ruff>=0.15.13",
 ]
@@ -28,4 +29,4 @@ line-length = 100
 select = ["E", "F", "I"]
 
 [tool.ruff.lint.per-file-ignores]
-"src/data_product/pipelines/validate_*.py" = ["F821"]
+"src/data_product/pipelines/*.py" = ["F821"]

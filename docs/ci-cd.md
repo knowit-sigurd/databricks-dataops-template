@@ -23,9 +23,10 @@ Configure these in **Settings → Secrets and variables → Actions**:
 
 | Secret | Used by | Description |
 |---|---|---|
-| `DATABRICKS_HOST` | `ci.yml`, `cd.yml` | Workspace URL, e.g. `https://adb-123.azuredatabricks.net` |
-| `DATABRICKS_TOKEN` | `ci.yml`, `cd.yml` | PAT or OAuth token for the deploy identity |
-| `DATABRICKS_SP_CLIENT_ID` | `cd.yml` | Service principal application UUID for `prod` `run_as` |
+| `DATABRICKS_HOST` | `ci.yml`, `cd.yml` | Workspace URL, e.g. `https://dbc-xxx.cloud.databricks.com` |
+| `DATABRICKS_CLIENT_ID` | `ci.yml`, `cd.yml` | Service principal application (client) ID — OAuth M2M |
+| `DATABRICKS_CLIENT_SECRET` | `ci.yml`, `cd.yml` | Service principal client secret — OAuth M2M |
+| `DATABRICKS_SP_CLIENT_ID` | `cd.yml` | SP application UUID for `prod` `run_as` (may be the same SP) |
 
 ### CI workflow (`ci.yml`)
 

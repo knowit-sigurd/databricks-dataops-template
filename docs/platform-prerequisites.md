@@ -33,7 +33,7 @@ A Databricks service principal is required for the `prod` target:
 1. Create a service principal in the Databricks account console.
 2. Grant it `CAN_MANAGE` on the `prod` pipelines and job (set automatically on first deploy when `run_as` is configured).
 3. Note the **application UUID** — this is `DATABRICKS_SP_CLIENT_ID` in CI secrets.
-4. Generate a personal access token (PAT) or OAuth M2M credential for CI authentication.
+4. Generate an OAuth M2M client secret for CI authentication (`DATABRICKS_CLIENT_ID` + `DATABRICKS_CLIENT_SECRET`).
 
 > The SP must own the prod pipelines for `event_log()` queries to work. See [architecture](architecture.md#key-design-decisions) and [runbook](runbook.md#event_log-access).
 
@@ -54,12 +54,13 @@ Databricks UC Volumes require an S3-backed external location:
 
 ### Databricks CLI authentication (AWS)
 
-Configure `~/.databrickscfg` with a PAT or OAuth token:
+Configure `~/.databrickscfg` with OAuth M2M:
 
 ```ini
 [DEFAULT]
-host  = https://<workspace-id>.cloud.databricks.com
-token = dapiXXXXXXXXXXXXXXXX
+host          = https://<workspace-id>.cloud.databricks.com
+client_id     = <sp-application-id>
+client_secret = <sp-client-secret>
 ```
 
 ---
@@ -81,12 +82,13 @@ Databricks UC Volumes require an ADLS Gen2-backed external location:
 
 ### Databricks CLI authentication (Azure)
 
-Configure `~/.databrickscfg` with a PAT or Azure CLI OAuth:
+Configure `~/.databrickscfg` with OAuth M2M:
 
 ```ini
 [DEFAULT]
-host  = https://adb-<workspace-id>.<region>.azuredatabricks.net
-token = dapiXXXXXXXXXXXXXXXX
+host          = https://adb-<workspace-id>.<region>.azuredatabricks.net
+client_id     = <sp-application-id>
+client_secret = <sp-client-secret>
 ```
 
 Azure DevOps service connections and variable groups are covered in [CI/CD](ci-cd.md#azure-devops).
