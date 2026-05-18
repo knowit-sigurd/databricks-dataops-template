@@ -50,7 +50,7 @@ Do not propose alternatives to these.
 - `warning` rules always use `expect` regardless of `quality_mode`
 - `presets.tags` in `databricks.yml` — not per-resource `tags:` blocks
 - DAB Python mutators for stable deploy-time tags only (not `deployed_at` by default — creates noisy diffs on every deploy)
-- `python.mutators` at top level (not `bundle.mutators`)
+- `python.mutators` at top level (not `bundle.mutators`), format `module:object_name` (e.g. `mutators.tags:tag_pipeline`)
 
 ## Test conventions
 

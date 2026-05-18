@@ -21,7 +21,8 @@ workspace:
 python:
   venv_path: .venv
   mutators:
-    - mutators/tags.py
+    - mutators.tags:tag_pipeline
+    - mutators.tags:tag_job
 
 presets:
   tags:
