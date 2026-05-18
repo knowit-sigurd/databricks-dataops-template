@@ -6,7 +6,7 @@ An opinionated Databricks DataOps starter template for one production-style data
 
 Successor to `databricks-dataops-lakeflow-reference` (reference/learning repo). Proven patterns carried forward; milestone ceremony and learning log left behind.
 
-Current build: **Pass 1 — Skeleton** (structure, docs, databricks.yml, Makefile, CI wrappers — no pipeline logic yet).
+Current build: **Pass 2** (Pass 1 complete and validated on Databricks dev + prod 2026-05-18).
 
 ## Locked-in architecture decisions
 
@@ -27,6 +27,23 @@ Do not propose alternatives to these.
 **`from pyspark import pipelines as dp`** — the canonical import alias. Never `import dlt` (legacy). Never `import pyspark.pipelines as dlt` (non-standard). Confirmed working on runtime dlt:17.3.10.
 
 **Pipeline library type is `file:`, not `notebook:`** — `.py` source files in pipeline resources use `libraries: - file: path: ...`. `notebook:` expects an `.ipynb` or Databricks notebook format and will reject plain Python files.
+
+**`environment.dependencies: - --editable ${workspace.file_path}`** on every pipeline resource — makes the `data_product` package importable in the DLT runtime. DABs uploads the source tree to `${workspace.file_path}` on deploy; the editable install reads the package from there. No wheel build required. Requires `[build-system]` (hatchling) in `pyproject.toml` and `[tool.hatch.build.targets.wheel] packages = ["src/data_product"]`.
+
+**`@dp.table` stubs use a rate stream filtered to zero rows** — `createDataFrame()` returns a batch relation which DLT rejects for streaming tables. Pattern:
+```python
+spark.readStream.format("rate").load()
+    .where(F.lit(False))
+    .select([F.lit(None).cast(f.dataType).alias(f.name) for f in SCHEMA])
+```
+
+**`@dp.materialized_view` stubs use `createDataFrame([], schema)`** — materialized views are batch; `createDataFrame` is correct and does not hang.
+
+**`SparkSession.getActiveSession()`** instead of the `spark` global — the global is injected by the DLT runtime but is not available in the local `spark-pipelines` runner.
+
+**Validate scripts are notebook tasks with relative paths** — `validate_silver_readiness.py` and `validate_gold_contract.py` must have `# Databricks notebook source` as their first line, and the job resource must reference them with a relative path (e.g. `../src/data_product/pipelines/validate_silver_readiness.py`) without `source: WORKSPACE`. Relative paths cause DABs to import via the Workspace Notebook Import API. Absolute `${workspace.root_path}/files/...` paths point to files stored via the Workspace Files API — a different storage mechanism, not accessible to `notebook_task`.
+
+**`bundle run` re-validates the full bundle config** — variables used in `run_as` (e.g. `sp_client_id`) must be passed to both `bundle deploy` and `bundle run`. The Makefile prod run target must include `--var sp_client_id=$(DATABRICKS_SP_CLIENT_ID)`.
 
 **`${var.catalog}` everywhere.** Default `dataops_template`. No hardcoded catalog name.
 
@@ -53,6 +70,12 @@ Do not propose alternatives to these.
 - `presets.tags` in `databricks.yml` — not per-resource `tags:` blocks
 - DAB Python mutators for stable deploy-time tags only (not `deployed_at` by default — creates noisy diffs on every deploy)
 - `python.mutators` at top level (not `bundle.mutators`), format `module:object_name` (e.g. `mutators.tags:tag_pipeline`)
+
+## Local dev workflow
+
+`make pipeline-run PIPELINE=<name>` runs a pipeline locally in the devcontainer using `spark-pipelines`. Specs live in `local-dev/<name>.yml`. The package is made available via `PYTHONPATH=$(pwd)/src` — no editable install needed locally.
+
+**Verify locally before committing.** For any pipeline or job change, run `make pipeline-run`, `make lint`, and `make test` and confirm they pass before writing a commit. Do not rely on Databricks CI as the feedback loop — each round-trip is slow. The exception is Databricks-specific behaviour (UC permissions, notebook Import API vs Files API) that cannot be caught locally.
 
 ## Test conventions
 
