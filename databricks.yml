@@ -16,7 +16,7 @@ variables:
     default: drop
 
 workspace:
-  root_path: /Shared/databricks-dataops-template/${bundle.target}/${bundle.git.branch}
+  root_path: ~/databricks-dataops-template/${bundle.target}/${bundle.git.branch}
 
 python:
   venv_path: .venv
@@ -48,6 +48,8 @@ targets:
 
   prod:
     mode: production
+    workspace:
+      root_path: /Shared/databricks-dataops-template/${bundle.git.branch}
     variables:
       target_schema: prod
       quality_mode: fail
