@@ -1,16 +1,19 @@
 from pyspark import pipelines as dp
+from pyspark.sql.types import StructType
+
+from data_product.domains.customers.transformations import BRONZE_SCHEMA
 
 
 @dp.table
 def customers_bronze():
-    pass
+    return spark.createDataFrame([], BRONZE_SCHEMA)
 
 
 @dp.table
 def customers_silver():
-    pass
+    return spark.createDataFrame([], StructType([]))
 
 
 @dp.table
 def customers_rejected():
-    pass
+    return spark.createDataFrame([], StructType([]))

@@ -1,16 +1,19 @@
 from pyspark import pipelines as dp
+from pyspark.sql.types import StructType
+
+from data_product.domains.orders.transformations import BRONZE_SCHEMA
 
 
 @dp.table
 def orders_bronze():
-    pass
+    return spark.createDataFrame([], BRONZE_SCHEMA)
 
 
 @dp.table
 def orders_silver():
-    pass
+    return spark.createDataFrame([], StructType([]))
 
 
 @dp.table
 def orders_rejected():
-    pass
+    return spark.createDataFrame([], StructType([]))
