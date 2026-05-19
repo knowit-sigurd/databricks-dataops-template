@@ -14,10 +14,11 @@ from data_product.domains.customers.transformations import (
 def customers_bronze():
     spark = SparkSession.getActiveSession()
     source_format = spark.conf.get("pipelines.source_format", "cloudFiles")
-    source_path = spark.conf.get(
-        "pipelines.customers_source_path",
-        "/Volumes/dataops_template/dev/customers_raw/",
-    )
+    source_path = spark.conf.get("pipelines.customers_source_path", None)
+    if source_path is None:
+        catalog = spark.conf.get("pipelines.catalog", "dataops_template")
+        target = spark.conf.get("pipelines.target", "dev")
+        source_path = f"/Volumes/{catalog}/{target}/customers_raw/"
 
     if source_format == "cloudFiles":
         reader = (
