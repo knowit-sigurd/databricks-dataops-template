@@ -1,7 +1,7 @@
 resources:
   pipelines:
     orders_pipeline:
-      name: "[${var.catalog}] orders_pipeline"
+      name: "[${var.catalog}] [${var.target_schema}] orders_pipeline"
       catalog: ${var.catalog}
       target: ${var.target_schema}
       serverless: true

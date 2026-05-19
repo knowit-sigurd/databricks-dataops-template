@@ -2,12 +2,12 @@ resources:
   volumes:
     customers_raw:
       catalog_name: ${var.catalog}
-      schema_name: ${var.target_schema}
+      schema_name: ${resources.schemas.target_schema.name}
       name: customers_raw
       volume_type: MANAGED
 
     orders_raw:
       catalog_name: ${var.catalog}
-      schema_name: ${var.target_schema}
+      schema_name: ${resources.schemas.target_schema.name}
       name: orders_raw
       volume_type: MANAGED
