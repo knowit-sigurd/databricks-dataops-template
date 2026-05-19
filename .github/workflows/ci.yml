@@ -67,6 +67,10 @@ jobs:
         run: make destroy-pr
         continue-on-error: true
 
+      - name: Create PR schema
+        if: steps.changes.outputs.should_deploy == 'true'
+        run: make create-schema-pr
+
       - name: Deploy PR environment
         if: steps.changes.outputs.should_deploy == 'true'
         run: make deploy-pr

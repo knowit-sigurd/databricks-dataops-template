@@ -31,6 +31,9 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
+      - name: Create prod schema
+        run: make create-schema-prod
+
       - name: Deploy prod
         run: make deploy-prod
 
