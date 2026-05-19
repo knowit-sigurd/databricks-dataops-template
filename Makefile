@@ -1,4 +1,4 @@
-.PHONY: lint test pipeline-run deploy-dev deploy-pr destroy-pr deploy-prod run-dev run-pr run-prod
+.PHONY: lint test pipeline-run should-deploy deploy-dev deploy-pr destroy-pr deploy-prod run-dev run-pr run-prod upload-sample-data-dev upload-sample-data-pr upload-sample-data-prod create-schema-pr create-schema-prod
 
 PIPELINE_PYTHON := $(shell pwd)/.venv/bin/python3
 PIPELINE_RUNNER := $(shell pwd)/.venv/bin/spark-pipelines
@@ -13,6 +13,27 @@ pipeline-run:
 	PYSPARK_DRIVER_PYTHON=$(PIPELINE_PYTHON) PYSPARK_PYTHON=$(PIPELINE_PYTHON) PYTHONPATH=$(shell pwd)/src \
 		$(PIPELINE_RUNNER) run --spec local-dev/$(PIPELINE).yml
 
+should-deploy:
+	@uv run python scripts/changed_files.py
+
+create-schema-pr:
+	databricks schemas create pr_$(PR_NUMBER) $(CATALOG) || true
+
+create-schema-prod:
+	databricks schemas create prod $(CATALOG) || true
+
+upload-sample-data-dev:
+	databricks fs cp --recursive data/sample/customers/ dbfs:/Volumes/$(CATALOG)/dev/customers_raw/ --overwrite
+	databricks fs cp --recursive data/sample/orders/ dbfs:/Volumes/$(CATALOG)/dev/orders_raw/ --overwrite
+
+upload-sample-data-pr: create-schema-pr
+	databricks fs cp --recursive data/sample/customers/ dbfs:/Volumes/$(CATALOG)/pr_$(PR_NUMBER)/customers_raw/ --overwrite
+	databricks fs cp --recursive data/sample/orders/ dbfs:/Volumes/$(CATALOG)/pr_$(PR_NUMBER)/orders_raw/ --overwrite
+
+upload-sample-data-prod: create-schema-prod
+	databricks fs cp --recursive data/sample/customers/ dbfs:/Volumes/$(CATALOG)/prod/customers_raw/ --overwrite
+	databricks fs cp --recursive data/sample/orders/ dbfs:/Volumes/$(CATALOG)/prod/orders_raw/ --overwrite
+
 deploy-dev:
 	databricks bundle deploy --target dev
 
@@ -21,6 +42,9 @@ deploy-pr:
 
 destroy-pr:
 	databricks bundle destroy --target pr --var target_schema=pr_$(PR_NUMBER) --auto-approve
+	databricks volumes delete $(CATALOG).pr_$(PR_NUMBER).customers_raw || true
+	databricks volumes delete $(CATALOG).pr_$(PR_NUMBER).orders_raw || true
+	databricks schemas delete $(CATALOG).pr_$(PR_NUMBER) --force || true
 
 deploy-prod:
 	databricks bundle deploy --target prod --var sp_client_id=$(DATABRICKS_SP_CLIENT_ID)

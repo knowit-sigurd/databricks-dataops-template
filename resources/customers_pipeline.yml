@@ -1,12 +1,14 @@
 resources:
   pipelines:
     customers_pipeline:
-      name: "[${var.catalog}] customers_pipeline"
+      name: "[${var.catalog}] [${var.target_schema}] customers_pipeline"
       catalog: ${var.catalog}
       target: ${var.target_schema}
       serverless: true
       configuration:
         quality_mode: ${var.quality_mode}
+        source_format: cloudFiles
+        customers_source_path: /Volumes/${var.catalog}/${var.target_schema}/customers_raw/
       libraries:
         - file:
             path: ../src/data_product/pipelines/customers_pipeline.py

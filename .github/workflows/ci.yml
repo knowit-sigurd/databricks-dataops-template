@@ -38,25 +38,47 @@ jobs:
       DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
       DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
+      CATALOG: ${{ vars.CATALOG || 'dataops_template' }}
     steps:
       - uses: actions/checkout@v6
 
       - name: Fix detached HEAD
         run: git checkout -B ${{ github.head_ref }}
 
-      - uses: databricks/setup-cli@main
-
       - uses: astral-sh/setup-uv@v7
 
       - name: Install dependencies
         run: uv sync
 
+      - name: Check if deploy needed
+        id: changes
+        env:
+          CI_PROVIDER: github
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          result=$(uv run python scripts/changed_files.py)
+          echo "should_deploy=$result" >> $GITHUB_OUTPUT
+
+      - uses: databricks/setup-cli@main
+
       - name: Destroy previous PR environment
+        if: steps.changes.outputs.should_deploy == 'true'
         run: make destroy-pr
         continue-on-error: true
 
+      - name: Create PR schema
+        if: steps.changes.outputs.should_deploy == 'true'
+        run: make create-schema-pr
+
       - name: Deploy PR environment
+        if: steps.changes.outputs.should_deploy == 'true'
         run: make deploy-pr
 
+      - name: Upload sample data
+        if: steps.changes.outputs.should_deploy == 'true'
+        run: make upload-sample-data-pr
+
       - name: Run operational job
+        if: steps.changes.outputs.should_deploy == 'true'
         run: make run-pr

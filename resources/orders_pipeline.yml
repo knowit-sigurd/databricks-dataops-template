@@ -1,12 +1,14 @@
 resources:
   pipelines:
     orders_pipeline:
-      name: "[${var.catalog}] orders_pipeline"
+      name: "[${var.catalog}] [${var.target_schema}] orders_pipeline"
       catalog: ${var.catalog}
       target: ${var.target_schema}
       serverless: true
       configuration:
         quality_mode: ${var.quality_mode}
+        source_format: cloudFiles
+        orders_source_path: /Volumes/${var.catalog}/${var.target_schema}/orders_raw/
       libraries:
         - file:
             path: ../src/data_product/pipelines/orders_pipeline.py

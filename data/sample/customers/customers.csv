@@ -1,0 +1,13 @@
+customer_id,name,email,country_code,phone
+c01,alice hansen,alice@example.com,NO,+4712345678
+c02,bob svensson,bob@example.com,SE,+46701234567
+c03,  clara nielsen  ,CLARA@EXAMPLE.COM,DK,+4512345678
+c04,dieter muller,dieter@example.com,DE,+4915123456789
+c05,Emma Williams,emma@example.com,GB,+447700900123
+c06,frank miller,frank@example.com,US,+12125551234
+c07,grace tremblay,grace@example.com,CA,+14165551234
+c08,hans schmidt,hans@example.com,DE,
+c09,ivan petrov,ivan@example.com,US,+12015551234
+c10,jane doe,jane@example.com,NO,+4798765432
+c11,karl test,not-an-email,NO,+4711111111
+c12,lisa demo,missingdomain@,GB,+4422222222

@@ -1,0 +1,66 @@
+table: "${catalog}.${target_schema}.customers_silver"
+description: >
+  Standardised and region-enriched customer records. Produced by customers_pipeline
+  from Auto Loader bronze ingestion of CSV files in the customers_raw UC Volume.
+  Rows failing critical rules cause pipeline failure; rows failing business_invalid
+  rules are dropped (dev/PR) or cause pipeline failure (prod) and land in customers_rejected.
+
+schema:
+  - name: customer_id
+    type: string
+    nullable: false
+    description: Source system customer identifier. Enforced non-null by critical rule.
+  - name: name_std
+    type: string
+    nullable: true
+    description: Customer name, whitespace-trimmed and title-cased.
+  - name: email_std
+    type: string
+    nullable: true
+    description: Email address, whitespace-trimmed and lowercased. Must match '%@%.%'.
+  - name: country_code
+    type: string
+    nullable: true
+    description: ISO 3166-1 alpha-2 country code as supplied in source CSV.
+  - name: region
+    type: string
+    nullable: true
+    description: >
+      Business region derived from country_code via a hardcoded lookup map.
+      Falls back to "Unknown" for unmapped codes.
+  - name: phone
+    type: string
+    nullable: true
+    description: Phone number as supplied. Null triggers a warning expectation but does not drop the row.
+  - name: _source_file
+    type: string
+    nullable: true
+    description: Source file path from _metadata.file_path (Auto Loader / file streaming metadata).
+  - name: _ingested_at
+    type: timestamp
+    nullable: false
+    description: Timestamp when the row was ingested into the bronze table (current_timestamp()).
+
+quality_checks:
+  - name: silver_not_empty
+    type: row_count_gt_zero
+    description: Table must contain at least one row after each pipeline run.
+  - name: silver_freshness
+    type: freshness_hours
+    column: _ingested_at
+    threshold: 24
+    description: Most recent _ingested_at must be within 24 hours of the validate task run time.
+  - name: rejection_ratio
+    type: fraction_lt_threshold
+    threshold: 0.30
+    description: >
+      Rows in customers_rejected must be fewer than 30% of rows in customers_bronze.
+      Exceeding this threshold indicates a systematic data quality problem upstream.
+
+rejection:
+  table: "${catalog}.${target_schema}.customers_rejected"
+  severity: business_invalid
+  rules:
+    - name: valid_email_format
+      constraint: "email_std LIKE '%@%.%'"
+      description: Rows where email_std does not contain @ followed by a dot land in customers_rejected.

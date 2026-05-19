@@ -1,19 +1,16 @@
 from pyspark import pipelines as dp
 from pyspark.sql import SparkSession
-from pyspark.sql.types import DecimalType, StringType, StructField, StructType, TimestampType
+
+from data_product.domains.gold.transformations import build_customer_orders
 
 
 @dp.materialized_view
-def orders_gold():
+def customer_order_summary():
     spark = SparkSession.getActiveSession()
-    return spark.createDataFrame(
-        [],
-        StructType([
-            StructField("customer_id", StringType(), nullable=True),
-            StructField("name", StringType(), nullable=True),
-            StructField("email", StringType(), nullable=True),
-            StructField("order_id", StringType(), nullable=True),
-            StructField("amount", DecimalType(10, 2), nullable=True),
-            StructField("order_date", TimestampType(), nullable=True),
-        ]),
-    )
+    catalog = spark.conf.get("pipelines.catalog", "dataops_template")
+    target_schema = spark.conf.get("pipelines.target", "dev")
+
+    customers_silver = spark.read.table(f"{catalog}.{target_schema}.customers_silver")
+    orders_silver = spark.read.table(f"{catalog}.{target_schema}.orders_silver")
+
+    return build_customer_orders(customers_silver, orders_silver)

@@ -21,6 +21,8 @@ resources:
             base_parameters:
               catalog: ${var.catalog}
               target_schema: ${var.target_schema}
+              customers_pipeline_id: ${resources.pipelines.customers_pipeline.id}
+              orders_pipeline_id: ${resources.pipelines.orders_pipeline.id}
 
         - task_key: run_gold
           depends_on:
