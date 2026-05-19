@@ -14,7 +14,7 @@ pipeline-run:
 		$(PIPELINE_RUNNER) run --spec local-dev/$(PIPELINE).yml
 
 should-deploy:
-	uv run python scripts/changed_files.py
+	@uv run python scripts/changed_files.py
 
 upload-sample-data-dev:
 	databricks fs cp --recursive data/sample/customers/ dbfs:/Volumes/$(CATALOG)/dev/customers_raw/ --overwrite

@@ -56,7 +56,9 @@ jobs:
           CI_PROVIDER: github
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-        run: echo "should_deploy=$(make should-deploy)" >> $GITHUB_OUTPUT
+        run: |
+          result=$(uv run python scripts/changed_files.py)
+          echo "should_deploy=$result" >> $GITHUB_OUTPUT
 
       - uses: databricks/setup-cli@main
 
