@@ -17,7 +17,7 @@ Opinionated Databricks DataOps starter template for one production-style data pr
 
 Three SDP pipeline resources feeding a Lakeflow orchestration job, deployed via Databricks Asset Bundles to three isolated targets (`dev`, `pr`, `prod`). Business logic lives in pure PySpark under `src/` and is unit-tested locally — pipeline files are thin wrappers.
 
-**Current build: Pass 1 — Skeleton.** Structure, bundle config, Makefile, and CI are in place. Pipeline logic is implemented in Pass 2.
+**Current build: Pass 2 — Working vertical slice.** Full domain logic, pipelines, validate scripts, and CI/CD verified end-to-end on GitHub Actions + Databricks.
 
 ## Quick start
 
