@@ -9,6 +9,9 @@ on:
       pr_number:
         description: PR number to destroy
         required: true
+      branch:
+        description: Branch the PR was deployed from
+        required: true
 
 jobs:
   destroy-pr:
@@ -25,7 +28,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Fix detached HEAD
-        run: git checkout -B ${{ github.head_ref }}
+        run: git checkout -B ${{ github.head_ref || inputs.branch }}
 
       - uses: databricks/setup-cli@main
 
