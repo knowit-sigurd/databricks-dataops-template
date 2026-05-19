@@ -8,4 +8,7 @@ class Rule:
     severity: str  # critical | business_invalid | warning
 
 
-GOLD_RULES: list[Rule] = []
+GOLD_RULES: list[Rule] = [
+    Rule("customer_id_not_null", "customer_id IS NOT NULL", "critical"),
+    Rule("non_negative_order_count", "order_count >= 0", "business_invalid"),
+]

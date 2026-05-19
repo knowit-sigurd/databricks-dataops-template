@@ -1,0 +1,13 @@
+resources:
+  volumes:
+    customers_raw:
+      catalog_name: ${var.catalog}
+      schema_name: ${var.target_schema}
+      name: customers_raw
+      volume_type: MANAGED
+
+    orders_raw:
+      catalog_name: ${var.catalog}
+      schema_name: ${var.target_schema}
+      name: orders_raw
+      volume_type: MANAGED

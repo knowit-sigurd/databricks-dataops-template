@@ -1,0 +1,73 @@
+table: "${catalog}.${target_schema}.customer_order_summary"
+description: >
+  Gold materialized view joining customers_silver and orders_silver. Produced by gold_pipeline.
+  One row per customer. Customers with no orders appear with order_count = 0 and null
+  total_amount / last_order_date (LEFT join on customer_id). Reads published UC tables
+  from the same catalog and schema — no LIVE references across pipeline boundaries.
+
+schema:
+  - name: customer_id
+    type: string
+    nullable: false
+    description: Customer identifier. Enforced non-null by critical rule on the gold pipeline.
+  - name: name_std
+    type: string
+    nullable: true
+    description: Standardised customer name, carried through from customers_silver.
+  - name: email_std
+    type: string
+    nullable: true
+    description: Standardised email address, carried through from customers_silver.
+  - name: region
+    type: string
+    nullable: true
+    description: Business region, carried through from customers_silver.
+  - name: order_count
+    type: long
+    nullable: false
+    description: >
+      Total number of orders for this customer. Zero for customers with no orders
+      (result of LEFT join — coalesced from null after the aggregation join).
+  - name: total_amount
+    type: decimal
+    nullable: true
+    description: >
+      Sum of order amounts for this customer. Null for customers with no orders.
+      Precision follows Spark decimal sum widening from DecimalType(10,2).
+  - name: last_order_date
+    type: timestamp
+    nullable: true
+    description: Most recent order_date for this customer. Null for customers with no orders.
+
+quality_checks:
+  - name: gold_not_empty
+    type: row_count_gt_zero
+    description: Table must contain at least one row after each pipeline run.
+  - name: required_columns
+    type: columns_present
+    columns:
+      - customer_id
+      - name_std
+      - email_std
+      - region
+      - order_count
+      - total_amount
+      - last_order_date
+    description: All seven columns must be present in the materialized view output.
+  - name: customer_id_not_null
+    type: column_not_null
+    column: customer_id
+    description: No row may have a null customer_id — a null indicates a join defect.
+  - name: non_negative_order_count
+    type: column_gte_zero
+    column: order_count
+    description: order_count must be >= 0 for all rows.
+
+notes:
+  - >
+    @dp.materialized_view expectations may not surface in event_log() the same way
+    streaming table expectations do. Verify on first prod run and update this note.
+  - >
+    gold_pipeline reads customers_silver and orders_silver via spark.read.table()
+    using catalog and target_schema passed as pipeline configuration — not via LIVE
+    references, which do not cross pipeline boundaries in Lakeflow/DLT.

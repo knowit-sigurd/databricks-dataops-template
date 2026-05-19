@@ -3,12 +3,6 @@ name: CD
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - "docs/**"
-      - "README.md"
-      - ".github/PULL_REQUEST_TEMPLATE.md"
-      - "pyproject.toml"
-      - "uv.lock"
 
 jobs:
   deploy-prod:
@@ -23,6 +17,7 @@ jobs:
       DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
       DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
       DATABRICKS_SP_CLIENT_ID: ${{ secrets.DATABRICKS_SP_CLIENT_ID }}
+      CATALOG: ${{ vars.CATALOG || 'dataops_template' }}
     steps:
       - uses: actions/checkout@v6
 
@@ -38,6 +33,9 @@ jobs:
 
       - name: Deploy prod
         run: make deploy-prod
+
+      - name: Upload sample data
+        run: make upload-sample-data-prod
 
       - name: Run operational job
         run: make run-prod

@@ -1,0 +1,66 @@
+table: "${catalog}.${target_schema}.orders_silver"
+description: >
+  Standardised order records. Produced by orders_pipeline from Auto Loader bronze
+  ingestion of CSV files in the orders_raw UC Volume. Two critical rules enforce
+  non-null order_id and customer_id at the pipeline level. Rows with non-positive
+  amounts are rejected via the business_invalid rule.
+
+schema:
+  - name: order_id
+    type: string
+    nullable: false
+    description: Source system order identifier. Enforced non-null by critical rule.
+  - name: customer_id
+    type: string
+    nullable: false
+    description: Foreign key to customers_silver.customer_id. Enforced non-null by critical rule.
+  - name: amount
+    type: decimal(10,2)
+    nullable: true
+    description: >
+      Order amount. Must be > 0 (business_invalid rule). Null amounts result from
+      failed decimal cast at Auto Loader ingest and also fail the positive_amount rule.
+  - name: order_date
+    type: timestamp
+    nullable: true
+    description: Order timestamp as supplied in source CSV, cast to TimestampType by Auto Loader schema.
+  - name: status_std
+    type: string
+    nullable: true
+    description: >
+      Order status, whitespace-trimmed and uppercased. Null triggers a warning
+      expectation but does not drop the row.
+  - name: _source_file
+    type: string
+    nullable: true
+    description: Source file path from _metadata.file_path (Auto Loader / file streaming metadata).
+  - name: _ingested_at
+    type: timestamp
+    nullable: false
+    description: Timestamp when the row was ingested into the bronze table (current_timestamp()).
+
+quality_checks:
+  - name: silver_not_empty
+    type: row_count_gt_zero
+    description: Table must contain at least one row after each pipeline run.
+  - name: silver_freshness
+    type: freshness_hours
+    column: _ingested_at
+    threshold: 24
+    description: Most recent _ingested_at must be within 24 hours of the validate task run time.
+  - name: rejection_ratio
+    type: fraction_lt_threshold
+    threshold: 0.30
+    description: >
+      Rows in orders_rejected must be fewer than 30% of rows in orders_bronze.
+      Exceeding this threshold indicates a systematic data quality problem upstream.
+
+rejection:
+  table: "${catalog}.${target_schema}.orders_rejected"
+  severity: business_invalid
+  rules:
+    - name: positive_amount
+      constraint: "amount > 0"
+      description: >
+        Rows where amount is null or <= 0 land in orders_rejected.
+        Null amounts arise from failed decimal cast at bronze ingest.

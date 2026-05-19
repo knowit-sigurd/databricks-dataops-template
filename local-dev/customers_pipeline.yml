@@ -5,3 +5,5 @@ libraries:
       include: ../src/data_product/pipelines/customers_pipeline.py
 configuration:
   quality_mode: drop
+  source_format: csv
+  customers_source_path: data/sample/customers/

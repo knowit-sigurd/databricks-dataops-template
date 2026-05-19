@@ -1,0 +1,21 @@
+# Expected row counts after running the operational job against data/sample/ fixtures.
+# Source: customers.csv (12 rows), orders.csv (15 rows)
+
+customers_bronze: 12
+customers_silver: 10    # 12 - 2 rejected: c11 (not-an-email), c12 (missingdomain@)
+customers_rejected: 2
+orders_bronze: 15
+orders_silver: 14       # 15 - 1 rejected: o09 (amount = -10.00, fails positive_amount)
+orders_rejected: 1
+customer_order_summary: 10  # All 10 silver customers appear — LEFT join preserves c09 (no orders)
+
+# Scenario annotations:
+#
+# c08 (null phone)     → passes to customers_silver; warning rule does not drop rows
+# o11 (null status)    → passes to orders_silver; warning rule does not drop rows
+# c09 (no orders)      → appears in gold with order_count=0, total_amount=null, last_order_date=null
+# c06 (only order o09 rejected) → appears in gold with order_count=0 (o09 had negative amount)
+# o14 (→ c11), o15 (→ c12) → pass to orders_silver (referential integrity not enforced at silver);
+#                             do NOT appear in gold because c11/c12 are not in customers_silver
+# c03                  → name and email carry standardisation markers (whitespace, uppercase)
+#                         to verify trim/initcap/lower in transform_bronze_to_silver
