@@ -1,0 +1,34 @@
+name: PR Cleanup
+
+on:
+  pull_request:
+    branches: [main]
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: PR number to destroy
+        required: true
+
+jobs:
+  destroy-pr:
+    name: Destroy PR environment
+    runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]'
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
+      DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
+      PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+      CATALOG: ${{ vars.CATALOG || 'dataops_template' }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Fix detached HEAD
+        run: git checkout -B ${{ github.head_ref }}
+
+      - uses: databricks/setup-cli@main
+
+      - name: Destroy PR environment
+        run: make destroy-pr
+        continue-on-error: true
