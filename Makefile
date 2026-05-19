@@ -42,7 +42,9 @@ deploy-pr:
 
 destroy-pr:
 	databricks bundle destroy --target pr --var target_schema=pr_$(PR_NUMBER) --auto-approve
-	databricks schemas delete dataops_template.pr_$(PR_NUMBER) --force || true
+	databricks volumes delete $(CATALOG).pr_$(PR_NUMBER).customers_raw || true
+	databricks volumes delete $(CATALOG).pr_$(PR_NUMBER).orders_raw || true
+	databricks schemas delete $(CATALOG).pr_$(PR_NUMBER) --force || true
 
 deploy-prod:
 	databricks bundle deploy --target prod --var sp_client_id=$(DATABRICKS_SP_CLIENT_ID)
