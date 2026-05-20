@@ -1,0 +1,31 @@
+bundle:
+  name: dataops_template_platform
+
+variables:
+  catalog:
+    description: Unity Catalog catalog name
+    default: dataops_template
+
+workspace:
+  root_path: /Shared/databricks-dataops-template-platform/${bundle.target}
+
+resources:
+  schemas:
+    dev_schema:
+      catalog_name: ${var.catalog}
+      name: dev
+      lifecycle:
+        prevent_destroy: true
+
+    prod_schema:
+      catalog_name: ${var.catalog}
+      name: prod
+      lifecycle:
+        prevent_destroy: true
+
+targets:
+  dev:
+    default: true
+
+  prod:
+    mode: production
