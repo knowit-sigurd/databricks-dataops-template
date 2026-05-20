@@ -4,7 +4,7 @@
 
 ## Type of change
 
-- [ ] Pipeline logic (Pass 2+)
+- [ ] Pipeline logic
 - [ ] Bundle config / infrastructure
 - [ ] CI/CD
 - [ ] Tests
