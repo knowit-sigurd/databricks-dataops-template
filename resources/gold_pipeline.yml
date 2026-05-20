@@ -11,6 +11,10 @@ resources:
       libraries:
         - file:
             path: ../src/data_product/pipelines/gold_pipeline.py
+      permissions:
+        - level: CAN_VIEW
+          group_name: data-operators
+
       environment:
         dependencies:
           - --editable ${workspace.file_path}

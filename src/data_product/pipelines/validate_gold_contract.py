@@ -115,6 +115,22 @@ else:
     run_record("non_negative_order_count", "PASS", "All order_count values >= 0")
     contract_record("non_negative_order_count", "PASS", 0, 0)
 
+# --- Print results to notebook output ---
+
+import json as _json
+
+print("validate_gold_contract")
+print("=" * 40)
+for row in run_rows:
+    _, _, check_name, _, status, message, _ = row
+    print(f"[{PIPELINE_NAME}] {check_name:<35} {status:<5} {message}")
+
+passed = sum(1 for r in run_rows if r[4] == "PASS")
+warned = sum(1 for r in run_rows if r[4] == "WARN")
+failed = sum(1 for r in run_rows if r[4] == "FAIL")
+overall = "FAIL" if failed else "PASS"
+print(f"\nOverall: {overall} ({passed} passed, {failed} failed, {warned} warned)")
+
 # --- Write ops rows ---
 (
     spark.createDataFrame(run_rows, schema=RUN_LOG_SCHEMA)
@@ -133,3 +149,5 @@ if failures:
         f"validate_gold_contract: {len(failures)} check(s) failed.\n"
         + "\n".join(failures)
     )
+
+dbutils.notebook.exit(_json.dumps({"status": overall, "passed": passed, "failed": failed, "warned": warned}))

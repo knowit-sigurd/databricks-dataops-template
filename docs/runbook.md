@@ -61,13 +61,24 @@ The bridge for prod: `validate_silver_readiness` and `validate_gold_contract` ru
 
 ## Re-running a failed job
 
-```bash
-# Re-run the entire operational job from the beginning
-make run-prod
+For a partial failure (some tasks succeeded, one failed), use a **repair run** — retries only the failed and skipped tasks without re-running tasks that already succeeded.
 
-# To re-run a single task, use the Databricks UI or CLI:
-databricks jobs run-now --job-id <job-id> --only run_gold
+```bash
+# Find the job ID
+databricks jobs list --output json | jq '.[] | select(.settings.name | contains("data_product_operational_job"))'
+
+# Find the failed run ID
+databricks jobs list-runs --job-id <job-id> --output json | jq '.[0].run_id'
+
+# Repair: retry failed and skipped tasks only
+databricks jobs repair-run --job-id <job-id> --run-id <run-id> --rerun-all-failed-tasks
 ```
+
+**Repair vs full restart:**
+- **Repair** — upstream tasks succeeded and their outputs are valid. Use for transient failures (network blip, serverless cold start, UC unavailability).
+- **Full restart** (`make run-prod`) — upstream data is suspect or you need to reprocess from a known-good state.
+
+All tasks in this job are safe to rerun: pipeline tasks (`run_customers`, `run_orders`, `run_gold`) process only new data via SDP incremental processing; notebook tasks (`validate_silver_readiness`, `validate_gold_contract`) are read-only queries that append to ops tables.
 
 ## Prod rollback
 

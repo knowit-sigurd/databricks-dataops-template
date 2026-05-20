@@ -158,6 +158,22 @@ for pipeline_name, pipeline_id in [
                f"event_log() unavailable (pipeline ownership required): {e}")
 
 
+# --- Print results to notebook output ---
+
+import json as _json
+
+print("validate_silver_readiness")
+print("=" * 40)
+for row in ops_rows:
+    _, pipeline_name, check_name, _, status, message, _ = row
+    print(f"[{pipeline_name}] {check_name:<35} {status:<5} {message}")
+
+passed = sum(1 for r in ops_rows if r[4] == "PASS")
+warned = sum(1 for r in ops_rows if r[4] == "WARN")
+failed = sum(1 for r in ops_rows if r[4] == "FAIL")
+overall = "FAIL" if failed else "PASS"
+print(f"\nOverall: {overall} ({passed} passed, {failed} failed, {warned} warned)")
+
 # --- Write ops rows ---
 
 (
@@ -173,3 +189,5 @@ if failures:
         f"validate_silver_readiness: {len(failures)} check(s) failed — gold pipeline blocked.\n"
         + "\n".join(failures)
     )
+
+dbutils.notebook.exit(_json.dumps({"status": overall, "passed": passed, "failed": failed, "warned": warned}))
