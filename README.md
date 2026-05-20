@@ -17,7 +17,7 @@ Opinionated Databricks DataOps starter template for one production-style data pr
 
 Three SDP pipeline resources feeding a Lakeflow orchestration job, deployed via Databricks Asset Bundles to three isolated targets (`dev`, `pr`, `prod`). Business logic lives in pure PySpark under `src/` and is unit-tested locally — pipeline files are thin wrappers.
 
-**Current build: Pass 2 — Working vertical slice.** Full domain logic, pipelines, validate scripts, and CI/CD verified end-to-end on GitHub Actions + Databricks.
+**Current build: Pass 3 — Portability hardening.** ADO provider in `changed_files.py`, CI/CD and platform docs covering both GitHub Actions and Azure DevOps. ADO pipeline YAML deferred until end-to-end verification is possible.
 
 ## Quick start
 
@@ -44,7 +44,7 @@ src/data_product/
 mutators/tags.py                  DAB Python mutator — stamps git_sha
 tests/                            unit tests (never import pipeline files)
 .github/workflows/                GitHub Actions CI/CD
-ci/                               Azure DevOps — planned for a future pass
+ci/                               Azure DevOps pipeline definitions (YAML deferred — see ci/README.md)
 docs/                             this documentation
 ```
 
