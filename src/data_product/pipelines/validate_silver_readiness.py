@@ -12,6 +12,7 @@ catalog = dbutils.widgets.get("catalog")
 target_schema = dbutils.widgets.get("target_schema")
 customers_pipeline_id = dbutils.widgets.get("customers_pipeline_id")
 orders_pipeline_id = dbutils.widgets.get("orders_pipeline_id")
+FRESHNESS_HOURS = int(dbutils.widgets.get("freshness_hours"))
 
 ops_table = f"{catalog}.{target_schema}.ops_pipeline_run_log"
 
@@ -57,7 +58,6 @@ def record(pipeline_name, check_name, check_type, status, message):
 
 # --- Direct checks (authoritative — drives pass/fail) ---
 
-FRESHNESS_HOURS = 24
 REJECTION_THRESHOLD = 0.30
 
 for domain, pipeline_name in [("customers", "customers_pipeline"), ("orders", "orders_pipeline")]:

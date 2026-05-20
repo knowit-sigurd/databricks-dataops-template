@@ -42,6 +42,7 @@ resources:
               target_schema: ${var.target_schema}
               customers_pipeline_id: ${resources.pipelines.customers_pipeline.id}
               orders_pipeline_id: ${resources.pipelines.orders_pipeline.id}
+              freshness_hours: "168"
 
         - task_key: run_gold
           depends_on:
