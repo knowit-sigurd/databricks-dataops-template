@@ -60,7 +60,7 @@ This runs pytest against local Spark (`local[1]`). No Databricks connection requ
 make deploy-dev
 ```
 
-This runs `databricks bundle deploy --target dev`. The bundle is deployed to `/Shared/databricks-dataops-template/dev/<branch>` in the workspace.
+This runs `databricks bundle deploy --target dev`. The bundle is deployed to `~/databricks-dataops-template/dev/<branch>` in the workspace.
 
 Verify in the Databricks UI: Workflows → the three pipelines and the operational job should appear under your dev schema.
 
@@ -69,8 +69,6 @@ Verify in the Databricks UI: Workflows → the three pipelines and the operation
 ```bash
 make run-dev
 ```
-
-> **Pass 1 stub.** The pipeline functions return `None` — the job run will complete with empty tables. Actual pipeline logic is in Pass 2.
 
 ## Makefile reference
 

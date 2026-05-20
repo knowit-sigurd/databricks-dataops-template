@@ -19,7 +19,7 @@ make deploy-prod
 make run-prod
 ```
 
-All targets call the Databricks CLI. Authentication comes from `~/.databrickscfg` or the `DATABRICKS_HOST` / `DATABRICKS_TOKEN` env vars.
+All targets call the Databricks CLI. Authentication comes from `~/.databrickscfg` or the `DATABRICKS_HOST` / `DATABRICKS_CLIENT_ID` / `DATABRICKS_CLIENT_SECRET` env vars (OAuth M2M).
 
 ## Check what's deployed
 
@@ -37,22 +37,18 @@ PR environments are destroyed automatically when a PR is merged or closed (CI `d
 make destroy-pr PR_NUMBER=42
 ```
 
-This calls `databricks bundle destroy` with `--auto-approve`. It removes the pipeline and job definitions from the workspace but does not drop the UC schema or tables.
-
-> **Pass 2:** Schema and table cleanup will be handled by the orphan cleanup script.
+This calls `databricks bundle destroy` with `--auto-approve`. It removes the pipeline and job definitions from the workspace but does not drop the UC schema or tables. Schema and volume cleanup for closed PRs is handled by the orphan cleanup script (runs automatically on PR close via CI).
 
 ## Monitoring pipeline runs
 
 Pipeline run history is visible in the Databricks UI under **Delta Live Tables**. Filter by catalog `dataops_template` and schema `dev` / `pr_<N>` / `prod`.
 
-Ops tables (written by the validate tasks) are queryable once Pass 2 is complete:
+Ops tables (written by the validate tasks after each job run) are queryable directly:
 
 ```sql
 SELECT * FROM dataops_template.prod.ops_pipeline_run_log ORDER BY run_id DESC LIMIT 20;
 SELECT * FROM dataops_template.prod.ops_contract_check_log ORDER BY checked_at DESC LIMIT 20;
 ```
-
-> **Pass 2 stub.** These tables do not exist yet. The validate task scripts are stubs.
 
 ## event_log() access
 
