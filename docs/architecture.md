@@ -46,7 +46,6 @@ The `quality_mode` bundle variable (`drop` in dev/PR, `fail` in prod) controls h
 
 Rules are defined in `src/data_product/domains/{domain}/rules.py` and applied in the pipeline wrapper. Tests must cover all three severities per domain.
 
-> **Pass 1 stub.** `CUSTOMER_RULES`, `ORDER_RULES`, and `GOLD_RULES` are empty lists. Rule definitions are implemented in Pass 2.
 
 ## Source package layout
 
