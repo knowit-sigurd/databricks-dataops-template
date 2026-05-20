@@ -10,7 +10,7 @@ What must be provisioned in the Databricks workspace before the first bundle dep
 
 - Unity Catalog enabled on the workspace
 - A metastore attached to the workspace
-- A catalog named `dataops` (or set `--var catalog=<name>` at deploy time)
+- A catalog named `dataops_template` (or set `--var catalog=<name>` at deploy time)
 
 ### Unity Catalog objects
 
@@ -18,7 +18,7 @@ The deploy user (or CI service principal) needs the following grants before the 
 
 ```sql
 -- Allow bundle deploy to create schemas and tables
-GRANT CREATE SCHEMA ON CATALOG dataops TO `<sp-or-user>`;
+GRANT CREATE SCHEMA ON CATALOG dataops_template TO `<sp-or-user>`;
 
 -- Allow pipeline to create managed tables within the target schema
 -- (granted automatically when the schema is created by the deployer)

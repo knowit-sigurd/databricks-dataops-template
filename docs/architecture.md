@@ -3,21 +3,19 @@
 ## Data flow
 
 ```
-UC Volume (/Volumes/dataops_template/<schema>/landing/)
-    │
-    ├── customers/  ──→  customers_pipeline  ──→  customers_bronze
-    │                                         ──→  customers_silver
-    │                                         ──→  customers_rejected
-    │
-    └── orders/  ────→  orders_pipeline  ────→  orders_bronze
-                                              ──→  orders_silver
-                                              ──→  orders_rejected
-                                                        │
-                                                (published UC tables)
-                                                        │
-                                                        ▼
-                                          gold_pipeline
-                                              ──→  customer_orders_gold  (materialized view)
+UC Volume (/Volumes/dataops_template/<schema>/customers_raw/)  ──→  customers_pipeline  ──→  customers_bronze
+                                                                                          ──→  customers_silver
+                                                                                          ──→  customers_rejected
+
+UC Volume (/Volumes/dataops_template/<schema>/orders_raw/)  ────→  orders_pipeline  ────→  orders_bronze
+                                                                                        ──→  orders_silver
+                                                                                        ──→  orders_rejected
+                                                                                                  │
+                                                                                          (published UC tables)
+                                                                                                  │
+                                                                                                  ▼
+                                                                                        gold_pipeline
+                                                                                            ──→  customer_orders_gold  (materialized view)
 ```
 
 Each source domain has its own SDP pipeline. Gold reads from the published silver UC tables — it does not run in the same pipeline as bronze/silver, and it has no dependency on the internal pipeline state of the source pipelines.
@@ -99,12 +97,14 @@ A separate platform bundle (`platform/databricks.yml`) optionally manages dev an
 
 ## Out of scope (MVP)
 
+This template is a DataOps starter, not a governance accelerator or platform landing zone. The exclusions below are deliberate scope boundaries — see [README](../README.md#what-this-is) for the full framing.
+
 | Feature | Reason |
 |---|---|
 | Column masks / row filters | Governance layer — Phase 3 |
 | Multi-workspace staging | Not required for this data product |
 | Shared ops schema | Phase 4 |
-| CDC (`apply_changes()`) | See [patterns/cdc.md](patterns/cdc.md) |
+| CDC (`create_auto_cdc_flow()`) | See [patterns/cdc.md](patterns/cdc.md) |
 | Push-based alerting | Operational tooling — Phase 3 |
 | Schema registry | Not required for file-based ingestion |
 | Third domain | Only if it demonstrates a new pattern |

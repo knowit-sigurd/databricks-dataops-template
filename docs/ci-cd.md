@@ -116,12 +116,20 @@ Never use PAT tokens.
 
 ### PR number and branch name
 
-| Value | ADO variable |
+| Value | ADO variable / expression |
 |---|---|
 | PR number | `$(System.PullRequest.PullRequestId)` |
-| Branch name | `$(Build.SourceBranchName)` |
+| Branch name | `$(Build.SourceBranch)` stripped of `refs/heads/` |
 
-ADO's `Build.SourceBranchName` is already the short branch name (no `refs/heads/` prefix) — no stripping needed. Unlike GitHub Actions, the checkout is not detached, so no `git checkout -B` step is required.
+Do not use `Build.SourceBranchName` — for branches containing a slash (e.g. `feature/my-feature`) it returns only the last segment (`my-feature`), which silently truncates `${bundle.git.branch}` in `workspace.root_path` and can cause root-path collisions between unrelated branches.
+
+Use `Build.SourceBranch` with an explicit strip step:
+
+```bash
+BRANCH=$(echo "$(Build.SourceBranch)" | sed 's|refs/heads/||')
+```
+
+Unlike GitHub Actions, the ADO checkout is not detached, so no `git checkout -B` equivalent is required once the branch variable is set correctly.
 
 ### Changed-file detection
 
