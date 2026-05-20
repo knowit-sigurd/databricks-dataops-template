@@ -95,3 +95,49 @@ source .venv/bin/activate
 ```
 
 You need Java 11+ on your PATH for local Spark tests to run. The devcontainer handles this automatically.
+
+---
+
+## Forking this template
+
+When adapting this template for a client data product, work through this checklist in order. The sample product uses `customers` and `orders` as domains and `dataops_template` as the catalog — replace these with the actual names throughout.
+
+### 1. Bundle identity
+
+- [ ] `databricks.yml` — rename `bundle.name` (used in workspace `root_path` and resource name prefixes)
+- [ ] `databricks.yml` — update `workspace.root_path` paths to use the new bundle name
+- [ ] `databricks.yml` — update `presets.tags.project` to match the new bundle name
+- [ ] `platform/databricks.yml` — rename `bundle.name` if using the platform bundle
+
+### 2. Catalog and schemas
+
+- [ ] `databricks.yml` — update the `catalog` variable default from `dataops_template` to the client catalog name
+- [ ] Verify `dev`, `pr_<N>`, and `prod` schema names are acceptable — or adjust `target_schema` defaults per target
+- [ ] Update the external location in UC to cover the new catalog/schema paths (see [platform-prerequisites.md](platform-prerequisites.md))
+
+### 3. Domains
+
+For each domain being replaced or added:
+
+- [ ] Create `src/data_product/domains/<domain>/transformations.py` and `rules.py`
+- [ ] Create `src/data_product/pipelines/<domain>_pipeline.py`
+- [ ] Add `resources/<domain>_pipeline.yml` — update pipeline name, source path, library path
+- [ ] Add `resources/volumes.yml` entry for the domain's landing volume
+- [ ] Wire `run_<domain>` task into `resources/data_product_operational_job.yml`
+- [ ] Add Makefile upload targets: `upload-sample-data-dev`, `upload-sample-data-pr` for the new volume
+- [ ] Add `data/sample/<domain>/` fixture files for local and PR testing
+- [ ] Add tests under `tests/domains/<domain>/`
+- [ ] Remove the sample `customers` and `orders` domains once replaced
+
+### 4. CI/CD and access
+
+- [ ] GitHub secrets (or ADO variable group) — set `DATABRICKS_HOST`, `DATABRICKS_CLIENT_ID`, `DATABRICKS_CLIENT_SECRET`, `DATABRICKS_SP_CLIENT_ID` for the client workspace
+- [ ] Replace `data-operators` group name in all resource YAMLs (`customers_pipeline.yml`, `orders_pipeline.yml`, `gold_pipeline.yml`, `data_product_operational_job.yml`) with the client's actual Databricks account group
+- [ ] Create or verify the prod run-as SP owns prod pipelines and job (required for `event_log()` access)
+- [ ] Grant `SELECT` on ops tables to the operators group
+
+### 5. Docs
+
+- [ ] `README.md` — update the "What this is" description for the actual data product
+- [ ] `docs/architecture.md` — update the data flow diagram with real domain and table names
+- [ ] `docs/runbook.md` — update SQL examples with the actual catalog and schema names

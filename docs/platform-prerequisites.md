@@ -26,6 +26,19 @@ GRANT CREATE SCHEMA ON CATALOG dataops_template TO `<sp-or-user>`;
 
 UC Volumes for landing data are created as part of the CI deploy sequence. The external location backing those volumes must already exist.
 
+### Identity and permissions reference
+
+Four identities interact with the workspace. The CI deploy SP and prod run-as SP may be the same SP in practice — the table below documents minimum rights per role so teams can decide whether to split them.
+
+| Identity | Workspace entitlement | Job / Pipeline permissions | UC privileges | Volume privileges |
+|---|---|---|---|---|
+| **Platform deployer** (runs `platform/` bundle once) | Workspace user or SP | — | `CREATE SCHEMA` on catalog | — |
+| **CI deploy SP** (`DATABRICKS_CLIENT_ID`) | Workspace access | Bundle deploy grants ownership of created resources | `USE CATALOG`, `CREATE SCHEMA` (PR schemas), `USE SCHEMA` on all target schemas | `READ VOLUME`, `WRITE VOLUME` (sample data upload), `CREATE VOLUME` (PR volumes) |
+| **Prod run-as SP** (`DATABRICKS_SP_CLIENT_ID`) | Workspace access | Must **own** prod pipelines and job (required for `event_log()` access — see [runbook](runbook.md#event_log-access)) | `USE CATALOG`, `USE SCHEMA` on prod schema, `SELECT`/`MODIFY` on bronze/silver/gold/ops tables | `READ VOLUME`, `WRITE VOLUME` on prod landing volumes |
+| **`data-operators` group** (human operators) | Workspace access | `CAN_VIEW` on pipelines, `CAN_MANAGE_RUN` on job (set automatically by bundle deploy) | `SELECT` on ops tables, optionally `SELECT` on gold | — |
+
+> Rename `data-operators` to your actual Databricks account group name in all pipeline and job resource YAMLs before first deploy.
+
 ### Service principal (prod)
 
 A Databricks service principal is required for the `prod` target:

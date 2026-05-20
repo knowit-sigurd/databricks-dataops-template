@@ -12,6 +12,8 @@ Opinionated Databricks DataOps starter template for one production-style data pr
 | [CI/CD](docs/ci-cd.md) | GitHub Actions and Azure DevOps pipeline reference |
 | [Runbook](docs/runbook.md) | Day-to-day operational commands |
 | [Patterns: CDC](docs/patterns/cdc.md) | Why CDC is out of scope and what to do when it isn't |
+| [Patterns: Backfill](docs/patterns/backfill.md) | Reprocessing historical data without resetting more than intended |
+| [Patterns: Schema migration](docs/patterns/schema-migration.md) | Evolving table schemas safely in a running pipeline |
 
 ## What this is
 

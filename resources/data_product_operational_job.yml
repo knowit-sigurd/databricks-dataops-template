@@ -3,12 +3,30 @@ resources:
     data_product_operational_job:
       name: "[${var.catalog}] data_product_operational_job"
 
+      max_concurrent_runs: 1
+
+      # Uncomment and configure for failure notifications.
+      # email_notifications:
+      #   on_failure:
+      #     - oncall@example.com
+      # webhook_notifications:
+      #   on_failure:
+      #     - id: <webhook-destination-id>
+
+      permissions:
+        - level: CAN_MANAGE_RUN
+          group_name: data-operators
+
       tasks:
         - task_key: run_customers
+          max_retries: 1
+          min_retry_interval_millis: 60000
           pipeline_task:
             pipeline_id: ${resources.pipelines.customers_pipeline.id}
 
         - task_key: run_orders
+          max_retries: 1
+          min_retry_interval_millis: 60000
           pipeline_task:
             pipeline_id: ${resources.pipelines.orders_pipeline.id}
 
@@ -16,6 +34,7 @@ resources:
           depends_on:
             - task_key: run_customers
             - task_key: run_orders
+          timeout_seconds: 300
           notebook_task:
             notebook_path: ../src/data_product/pipelines/validate_silver_readiness.py
             base_parameters:
@@ -27,12 +46,15 @@ resources:
         - task_key: run_gold
           depends_on:
             - task_key: validate_silver_readiness
+          max_retries: 1
+          min_retry_interval_millis: 60000
           pipeline_task:
             pipeline_id: ${resources.pipelines.gold_pipeline.id}
 
         - task_key: validate_gold_contract
           depends_on:
             - task_key: run_gold
+          timeout_seconds: 300
           notebook_task:
             notebook_path: ../src/data_product/pipelines/validate_gold_contract.py
             base_parameters:

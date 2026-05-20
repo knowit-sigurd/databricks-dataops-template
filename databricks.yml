@@ -1,5 +1,6 @@
 bundle:
   name: databricks-dataops-template
+  databricks_cli_version: ">= 0.240.0"
 
 variables:
   catalog:
@@ -48,6 +49,8 @@ targets:
 
   prod:
     mode: production
+    git:
+      branch: main
     workspace:
       root_path: /Shared/databricks-dataops-template/${bundle.git.branch}
     variables:
