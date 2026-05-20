@@ -24,7 +24,7 @@ GRANT CREATE SCHEMA ON CATALOG dataops TO `<sp-or-user>`;
 -- (granted automatically when the schema is created by the deployer)
 ```
 
-UC Volumes for landing data are created as part of the CI deploy sequence (Pass 2). The external location backing those volumes must already exist.
+UC Volumes for landing data are created as part of the CI deploy sequence. The external location backing those volumes must already exist.
 
 ### Service principal (prod)
 
@@ -32,7 +32,7 @@ A Databricks service principal is required for the `prod` target:
 
 1. Create a service principal in the Databricks account console.
 2. Grant it `CAN_MANAGE` on the `prod` pipelines and job (set automatically on first deploy when `run_as` is configured).
-3. Note the **application UUID** — this is `DATABRICKS_SP_CLIENT_ID` in CI secrets.
+3. Note the **application UUID** — this is `DATABRICKS_SP_CLIENT_ID` in CI secrets / variable group.
 4. Generate an OAuth M2M client secret for CI authentication (`DATABRICKS_CLIENT_ID` + `DATABRICKS_CLIENT_SECRET`).
 
 > The SP must own the prod pipelines for `event_log()` queries to work. See [architecture](architecture.md#key-design-decisions) and [runbook](runbook.md#event_log-access).
@@ -51,6 +51,8 @@ Databricks UC Volumes require an S3-backed external location:
    - **URL:** `s3://<bucket>/<prefix>`
    - **Storage credential:** the IAM role ARN
 4. The location must be accessible to the workspace metastore.
+
+> Pipeline code never references `s3://` directly. Access is through `/Volumes/...` only.
 
 ### Databricks CLI authentication (AWS)
 
@@ -77,6 +79,7 @@ Databricks UC Volumes require an ADLS Gen2-backed external location:
 4. Register the external location:
    - **URL:** `abfss://<container>@<storage-account>.dfs.core.windows.net/<prefix>`
    - **Storage credential:** the Azure SP credential registered above
+5. The location must be accessible to the workspace metastore.
 
 > Pipeline code never references `abfss://` directly. Access is through `/Volumes/...` only.
 
@@ -97,9 +100,19 @@ Azure DevOps service connections and variable groups are covered in [CI/CD](ci-c
 
 ## Checklist
 
+**Shared:**
 - [ ] Workspace has Unity Catalog enabled with a metastore attached
 - [ ] Catalog `dataops` exists (or custom catalog name decided)
-- [ ] External location registered and accessible to the workspace
 - [ ] Deployer user/SP has `CREATE SCHEMA` on the catalog
 - [ ] Prod SP created, application UUID noted
-- [ ] CI secrets populated (see [CI/CD](ci-cd.md#secrets))
+
+**AWS:**
+- [ ] S3 bucket and IAM role created
+- [ ] External location registered in UC account console and accessible to the workspace metastore
+- [ ] GitHub Actions secrets populated (see [CI/CD — GitHub Actions](ci-cd.md#secrets))
+
+**Azure:**
+- [ ] ADLS Gen2 storage account and container created
+- [ ] Azure SP with `Storage Blob Data Contributor` on the container
+- [ ] Storage credential and external location registered in UC account console and accessible to the workspace metastore
+- [ ] GitHub Actions secrets **or** ADO variable group populated (see [CI/CD](ci-cd.md#github-actions) / [CI/CD — Azure DevOps](ci-cd.md#azure-devops))
