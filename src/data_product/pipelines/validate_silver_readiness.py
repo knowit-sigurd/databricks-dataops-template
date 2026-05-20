@@ -1,4 +1,5 @@
 # Databricks notebook source
+import json as _json
 from datetime import datetime, timezone
 
 from pyspark.sql import SparkSession
@@ -160,8 +161,6 @@ for pipeline_name, pipeline_id in [
 
 # --- Print results to notebook output ---
 
-import json as _json
-
 print("validate_silver_readiness")
 print("=" * 40)
 for row in ops_rows:
@@ -190,4 +189,6 @@ if failures:
         + "\n".join(failures)
     )
 
-dbutils.notebook.exit(_json.dumps({"status": overall, "passed": passed, "failed": failed, "warned": warned}))
+dbutils.notebook.exit(_json.dumps({
+    "status": overall, "passed": passed, "failed": failed, "warned": warned,
+}))
