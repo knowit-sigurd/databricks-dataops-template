@@ -41,8 +41,5 @@ jobs:
       - name: Deploy prod
         run: make deploy-prod
 
-      - name: Upload sample data
-        run: make upload-sample-data-prod
-
       - name: Run operational job
         run: make run-prod

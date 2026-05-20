@@ -17,7 +17,9 @@ Opinionated Databricks DataOps starter template for one production-style data pr
 
 Three SDP pipeline resources feeding a Lakeflow orchestration job, deployed via Databricks Asset Bundles to three isolated targets (`dev`, `pr`, `prod`). Business logic lives in pure PySpark under `src/` and is unit-tested locally — pipeline files are thin wrappers.
 
-**Current build: Pass 3 — Portability hardening.** ADO provider in `changed_files.py`, CI/CD and platform docs covering both GitHub Actions and Azure DevOps. ADO pipeline YAML deferred until end-to-end verification is possible.
+This is a DataOps starter, not a governance accelerator and not a platform landing zone. It demonstrates production deployment, environment isolation, data quality gates, orchestration, and operational handoff for one data product. Governance (column masks, row filters, ABAC), enterprise observability, and multi-workspace promotion are extension layers — deliberately out of scope so the core remains forkable without prerequisite decisions the template cannot make for the client.
+
+**Current build: Pass 5 — Production hardening and correctness fixes.**
 
 ## Quick start
 

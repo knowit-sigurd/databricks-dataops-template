@@ -17,16 +17,18 @@ If the source is append-only and never retracts or amends rows, CDC adds complex
 
 ---
 
-## Recommended path: apply_changes()
+## Recommended path: create_auto_cdc_flow()
 
-`apply_changes()` is the SDP/DLT primitive for event-stream CDC. It targets a silver table and maintains it as a Type 1 SCD (last write wins) or Type 2 SCD (full history).
+`create_auto_cdc_flow()` is the SDP/DLT primitive for event-stream CDC. It targets a silver table and maintains it as a Type 1 SCD (last write wins) or Type 2 SCD (full history).
+
+> `apply_changes()` is the deprecated predecessor — same signature, still functional, but Databricks recommends migrating to the new name.
 
 Minimal shape:
 
 ```python
 from pyspark import pipelines as dp
 
-dp.apply_changes(
+dp.create_auto_cdc_flow(
     target="customers_silver",
     source="customers_bronze",
     keys=["customer_id"],
@@ -49,15 +51,17 @@ Key decisions:
 
 ---
 
-## Recommended path: apply_changes_from_snapshot()
+## Recommended path: create_auto_cdc_from_snapshot_flow()
 
 Use this when the source delivers full periodic snapshots (e.g. a nightly full extract) rather than a change log. Deletes are inferred: if a key was in snapshot N and absent in snapshot N+1, it is treated as deleted.
+
+> `apply_changes_from_snapshot()` is the deprecated predecessor — same signature, still functional, but Databricks recommends migrating to the new name.
 
 ```python
 import pyspark.sql.functions as F
 from pyspark import pipelines as dp
 
-dp.apply_changes_from_snapshot(
+dp.create_auto_cdc_from_snapshot_flow(
     target="customers_silver",
     source=lambda: spark.read.table("customers_bronze"),
     keys=["customer_id"],
@@ -66,7 +70,7 @@ dp.apply_changes_from_snapshot(
 )
 ```
 
-Key differences from `apply_changes()`:
+Key differences from `create_auto_cdc_flow()`:
 
 - No `sequence_by` — ordering is determined by snapshot arrival order, not a column value
 - The source is a batch relation (a lambda returning a DataFrame), not a streaming table
@@ -152,6 +156,6 @@ If CDC is added to an existing domain (e.g. `customers`):
 
 ## References
 
-- [Databricks: `apply_changes()` API](https://docs.databricks.com/aws/en/dlt/cdc)
-- [Databricks: `apply_changes_from_snapshot()` API](https://docs.databricks.com/aws/en/dlt/python-ref#apply_changes_from_snapshot)
-- [Databricks: SCD Type 2 with DLT](https://docs.databricks.com/aws/en/dlt/cdc#scd-type-2)
+- [Databricks: AUTO CDC APIs](https://docs.databricks.com/aws/en/ldp/cdc)
+- [Databricks: `create_auto_cdc_flow()` Python reference](https://docs.databricks.com/aws/en/ldp/python-ref#create_auto_cdc_flow)
+- [Databricks: SCD Type 2 with Lakeflow Declarative Pipelines](https://docs.databricks.com/aws/en/ldp/cdc#scd-type-2)
