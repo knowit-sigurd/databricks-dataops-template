@@ -81,6 +81,8 @@ Pipeline files import from domains but contain no business logic. Tests import o
 
 Per-PR root path isolation is enforced by including `${bundle.git.branch}` in the workspace `root_path`.
 
+A separate platform bundle (`platform/databricks.yml`) optionally manages dev and prod schemas with `lifecycle.prevent_destroy: true` — for teams where a platform function owns persistent infrastructure separately from the data product bundle.
+
 ## Key design decisions
 
 **Three pipelines, not one.** Source domains are isolated. A schema change in orders does not require redeploying customers. Gold reads published UC tables — it is not coupled to silver pipeline internals.
