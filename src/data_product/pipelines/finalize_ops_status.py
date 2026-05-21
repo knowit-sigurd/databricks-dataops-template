@@ -12,13 +12,12 @@ spark = SparkSession.builder.getOrCreate()
 catalog = dbutils.widgets.get("catalog")
 target_schema = dbutils.widgets.get("target_schema")
 bundle_target = dbutils.widgets.get("bundle_target")
+# {{parent_run_id}} and {{job.id}} are Databricks dynamic value references resolved at runtime
+job_run_id_param = dbutils.widgets.get("job_run_id")
+job_id_param = dbutils.widgets.get("job_id")
 
 ops_job_log = f"{catalog}.{target_schema}.ops_job_run_log"
 recorded_at = datetime.now(timezone.utc)
-
-# --- Resolve job run context via SDK ---
-# currentRunId() returns the task-level run ID in a multi-task job.
-# parent_run_id is the enclosing job run ID we need to inspect task outcomes.
 
 overall_status = "UNKNOWN"
 failed_task_key = None
@@ -26,18 +25,14 @@ failure_message = None
 started_at = None
 completed_at = recorded_at
 duration_seconds = None
-job_run_id_str = "unknown"
+job_run_id_str = job_run_id_param
 job_run_url = None
 git_sha = "unknown"
 
 try:
-    raw_run_id = int(
-        dbutils.notebook.entry_point.getDbutils().notebook().getContext().currentRunId().get()
-    )
     w = WorkspaceClient()
 
-    task_run = w.jobs.get_run(run_id=raw_run_id)
-    job_run_id = task_run.parent_run_id if task_run.parent_run_id else raw_run_id
+    job_run_id = int(job_run_id_param)
     job_run = w.jobs.get_run(run_id=job_run_id)
     job_run_id_str = str(job_run_id)
 
@@ -46,10 +41,10 @@ try:
     if started_at:
         duration_seconds = int((recorded_at - started_at).total_seconds())
 
-    job_run_url = f"{w.config.host}/jobs/{job_run.job_id}/runs/{job_run_id}"
+    job_run_url = f"{w.config.host}/jobs/{job_id_param}/runs/{job_run_id}"
 
     # git_sha stamped onto the job by the DAB mutator
-    job_details = w.jobs.get(job_id=job_run.job_id)
+    job_details = w.jobs.get(job_id=int(job_id_param))
     git_sha = (job_details.settings.tags or {}).get("git_sha", "unknown")
 
     # Derive overall_status from task outcomes — independent of validate notebook results

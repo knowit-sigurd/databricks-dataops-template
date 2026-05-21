@@ -73,3 +73,5 @@ resources:
               catalog: ${var.catalog}
               target_schema: ${var.target_schema}
               bundle_target: ${bundle.target}
+              job_run_id: "{{parent_run_id}}"
+              job_id: "{{job.id}}"
