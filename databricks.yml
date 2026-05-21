@@ -38,16 +38,16 @@ targets:
   dev:
     mode: development
     default: true
-    experimental:
-      skip_name_prefix_for_schema: true
+    presets:
+      name_prefix: ""
     variables:
       target_schema: dev
       quality_mode: drop
 
   pr:
     mode: development
-    experimental:
-      skip_name_prefix_for_schema: true
+    presets:
+      name_prefix: ""
     variables:
       quality_mode: drop
 
