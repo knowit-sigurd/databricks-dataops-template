@@ -1,7 +1,7 @@
 resources:
   jobs:
     data_product_operational_job:
-      name: "[${var.catalog}] data_product_operational_job"
+      name: "[${var.target_schema}] data_product_operational_job"
 
       max_concurrent_runs: 1
 

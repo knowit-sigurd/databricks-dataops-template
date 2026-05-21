@@ -19,13 +19,13 @@ def _git_sha() -> str:
 
 @pipeline_mutator
 def tag_pipeline(bundle: Bundle, pipeline: Pipeline) -> Pipeline:
-    tags = dict(pipeline.tags or {})
+    tags = {**(bundle.resolve_variable(pipeline.tags) or {})}
     tags["git_sha"] = _git_sha()
     return replace(pipeline, tags=tags)
 
 
 @job_mutator
 def tag_job(bundle: Bundle, job: Job) -> Job:
-    tags = dict(job.tags or {})
+    tags = {**(bundle.resolve_variable(job.tags) or {})}
     tags["git_sha"] = _git_sha()
     return replace(job, tags=tags)
