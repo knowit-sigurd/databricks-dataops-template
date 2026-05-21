@@ -61,3 +61,17 @@ resources:
             base_parameters:
               catalog: ${var.catalog}
               target_schema: ${var.target_schema}
+
+        - task_key: finalize_ops_status
+          depends_on:
+            - task_key: validate_gold_contract
+          run_if: ALL_DONE
+          timeout_seconds: 120
+          notebook_task:
+            notebook_path: ../src/data_product/pipelines/finalize_ops_status.py
+            base_parameters:
+              catalog: ${var.catalog}
+              target_schema: ${var.target_schema}
+              bundle_target: ${bundle.target}
+              job_run_id: "{{parent_run_id}}"
+              job_id: "{{job.id}}"
