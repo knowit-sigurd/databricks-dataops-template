@@ -2,16 +2,16 @@
 
 ## Not in MVP
 
-CDC via `apply_changes()` is out of scope for this data product. The source systems deliver full snapshots or append-only event streams — there are no deletes or out-of-order updates to handle.
+CDC via `create_auto_cdc_flow()` is out of scope for this data product. The source systems deliver full snapshots or append-only event streams — there are no deletes or out-of-order updates to handle.
 
 ## When CDC is needed
 
-Use `apply_changes()` when the source delivers:
+Use `create_auto_cdc_flow()` when the source delivers:
 - Row-level deletes
 - Updates to existing rows (not inserts)
 - Out-of-order records that must be applied in sequence order
 
-Use `apply_changes_from_snapshot()` when the source delivers periodic full snapshots and deletes are implied by absence — the row was present last snapshot, absent this one.
+Use `create_auto_cdc_from_snapshot_flow()` when the source delivers periodic full snapshots and deletes are implied by absence — the row was present last snapshot, absent this one.
 
 If the source is append-only and never retracts or amends rows, CDC adds complexity with no benefit.
 
@@ -41,9 +41,9 @@ Key decisions:
 
 1. **`sequence_by` column** — must be a monotonically increasing timestamp or version number present in the source. Auto Loader ingest order (`_metadata.file_path`) is not sufficient — use a source-side sequence column.
 
-2. **Quality expectations on bronze, not silver** — with `apply_changes()`, the silver table is managed by the CDC engine. `@dp.expect_or_*` decorators belong on the bronze source table, not on the CDC target.
+2. **Quality expectations on bronze, not silver** — with `create_auto_cdc_flow()`, the silver table is managed by the CDC engine. `@dp.expect_or_*` decorators belong on the bronze source table, not on the CDC target.
 
-3. **Rejected rows** — `apply_changes()` does not support a rejected table directly. Implement a pre-filter step that routes invalid rows to `customers_rejected` before they reach the CDC target. See [When to split bronze and silver](#when-to-split-bronze-and-silver).
+3. **Rejected rows** — `create_auto_cdc_flow()` does not support a rejected table directly. Implement a pre-filter step that routes invalid rows to `customers_rejected` before they reach the CDC target. See [When to split bronze and silver](#when-to-split-bronze-and-silver).
 
 4. **`run_as` and event_log** — the CDC pipeline still requires SP ownership in prod for `event_log()` access. No change to the ownership model.
 
@@ -85,15 +85,15 @@ Do not implement CDC with a manual `MERGE INTO` statement inside a `@dp.table` f
 - **No ordering guarantee** — DLT may process micro-batches in any order. A MERGE without a reliable sequence column will silently apply updates out of order.
 - **No restartability** — DLT's incremental processing model assumes idempotent operations. A MERGE that reads from a mutable target table breaks this assumption; a restart may produce different results.
 - **No delete support** — MERGE can handle updates but delete semantics require tracking tombstone records manually, which is error-prone.
-- **No SCD Type 2** — implementing history tracking on top of MERGE requires significant custom logic that `apply_changes()` provides out of the box.
+- **No SCD Type 2** — implementing history tracking on top of MERGE requires significant custom logic that `create_auto_cdc_flow()` provides out of the box.
 
-`apply_changes()` exists specifically to replace this pattern. Use it.
+`create_auto_cdc_flow()` exists specifically to replace this pattern. Use it.
 
 ---
 
 ## Schema change handling
 
-`apply_changes()` respects the `schema_evolution_mode` setting on the pipeline resource.
+`create_auto_cdc_flow()` respects the `schema_evolution_mode` setting on the pipeline resource.
 
 | Mode | Behaviour |
 |---|---|
@@ -114,7 +114,7 @@ Never rely on schema inference in bronze (`StructType` is required by convention
 
 ## When to split bronze and silver
 
-With `apply_changes()`, the silver table is owned by the CDC engine — you cannot attach a `@dp.table` function to it. This changes the bronze→silver relationship.
+With `create_auto_cdc_flow()`, the silver table is owned by the CDC engine — you cannot attach a `@dp.table` function to it. This changes the bronze→silver relationship.
 
 Split bronze into two steps when adding CDC:
 
@@ -127,10 +127,10 @@ Auto Loader → customers_bronze_raw    (@dp.table, streaming, explicit schema)
              customers_bronze          (@dp.table, quality-filtered, ready for CDC)
                     │
                     ▼
-             dp.apply_changes(target="customers_silver", source="customers_bronze", ...)
+             dp.create_auto_cdc_flow(target="customers_silver", source="customers_bronze", ...)
 ```
 
-The intermediate `customers_bronze` step is where quality expectations (`@dp.expect_or_drop`, `@dp.expect_or_fail`) live. `apply_changes()` consumes from this clean source.
+The intermediate `customers_bronze` step is where quality expectations (`@dp.expect_or_drop`, `@dp.expect_or_fail`) live. `create_auto_cdc_flow()` consumes from this clean source.
 
 Split is necessary when:
 - You need a rejected table alongside CDC (rejected rows must be diverted before the CDC target)
@@ -145,7 +145,7 @@ Split is not necessary when:
 
 If CDC is added to an existing domain (e.g. `customers`):
 
-- Replace the `customers_silver` `@dp.table` function with `dp.apply_changes()`
+- Replace the `customers_silver` `@dp.table` function with `dp.create_auto_cdc_flow()`
 - Add a pre-CDC `customers_bronze` quality step as a separate `@dp.table`
 - Update `transformations.py`: the silver transform function is removed; the bronze quality filter becomes the main transformation
 - Update tests: test the bronze quality filter, not a silver transform function (there is none)

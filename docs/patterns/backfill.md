@@ -24,7 +24,7 @@ Auto Loader tracks which files have been processed via a checkpoint stored in th
 
 On every pipeline update, Auto Loader reads only files not yet in the checkpoint. Bronze tables are append-only by default. Silver and gold are rebuilt incrementally from new bronze rows.
 
-A **full refresh** (`databricks pipelines start --full-refresh`) discards incremental state for the specified tables and reprocesses from the current source. It does not reset the Auto Loader checkpoint — files that were already processed are not re-ingested unless you also reset the checkpoint.
+A **full refresh** (`databricks pipelines start --full-refresh`) on a streaming table truncates the table, removes the Auto Loader checkpoint, and restarts ingestion from the beginning of the source. All files in the landing volume are re-ingested. Use full refresh only when you need to reprocess everything from scratch — not for targeted backfills.
 
 ---
 
@@ -56,16 +56,14 @@ A checkpoint reset is required when:
 Reset via the Databricks CLI:
 
 ```bash
-# Full refresh a specific table (reprocesses from current source, does not re-ingest files)
+# Full refresh a specific table — truncates the table and resets its checkpoint
 databricks pipelines start --pipeline-id <id> --full-refresh-selection customers_bronze
 
-# Full refresh the entire pipeline (all tables, from current source)
+# Full refresh the entire pipeline — truncates all tables and resets all checkpoints
 databricks pipelines start --pipeline-id <id> --full-refresh
 ```
 
-To re-ingest files from the Auto Loader source after a full refresh, you must also clear the checkpoint. This is done by deleting the pipeline and recreating it (the checkpoint lives under the pipeline storage path and is deleted with the pipeline), or by using Auto Loader's `cloudFiles.backfillInterval` option.
-
-> Deleting and recreating the pipeline changes the pipeline ID. Any job references, `event_log()` queries, and ops table pipeline IDs must be updated.
+After a full refresh, the next pipeline run re-ingests all files from the landing volume from the beginning. This is the correct behaviour — the checkpoint was removed as part of the full refresh.
 
 ---
 

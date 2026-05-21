@@ -56,4 +56,4 @@ docs/                             this documentation
 
 - Databricks workspace with Unity Catalog — see [platform prerequisites](docs/platform-prerequisites.md)
 - Databricks CLI configured (`~/.databrickscfg`) — see [setup](docs/setup.md)
-- GitHub secrets `DATABRICKS_HOST`, `DATABRICKS_CLIENT_ID`, `DATABRICKS_CLIENT_SECRET`, `DATABRICKS_SP_CLIENT_ID` — see [CI/CD](docs/ci-cd.md)
+- GitHub Actions secrets or Azure DevOps variable group variables: `DATABRICKS_HOST`, `DATABRICKS_CLIENT_ID`, `DATABRICKS_CLIENT_SECRET`, `DATABRICKS_SP_CLIENT_ID` — see [CI/CD](docs/ci-cd.md)
