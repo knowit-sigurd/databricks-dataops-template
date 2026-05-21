@@ -10,7 +10,7 @@ targets:
           dataset_catalog: ${var.catalog}
           dataset_schema: ${var.target_schema}
           permissions:
-            - level: CAN_VIEW
+            - level: CAN_READ
               group_name: data-operators
 
   prod:
@@ -24,5 +24,5 @@ targets:
           dataset_catalog: ${var.catalog}
           dataset_schema: prod
           permissions:
-            - level: CAN_VIEW
+            - level: CAN_READ
               group_name: data-operators
