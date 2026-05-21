@@ -1,0 +1,825 @@
+{
+  "datasets": [
+    {
+      "name": "3d803090",
+      "displayName": "ops_pipeline_run_history_v",
+      "queryLines": [
+        "SELECT pipeline_name, check_name, status, message, checked_at\n",
+        "FROM dataops_template.prod.ops_pipeline_run_history_v\n",
+        "WHERE check_type = 'direct'\n",
+        "  AND run_id = (SELECT MAX(run_id) FROM dataops_template.prod.ops_pipeline_run_history_v)\n"
+      ]
+    },
+    {
+      "name": "154c2b71",
+      "displayName": "ops_run_history_v",
+      "config": {
+        "version": "1.1",
+        "source": "dataops_template.prod.ops_run_history_v",
+        "dimensions": [
+          {
+            "name": "job_run_id",
+            "expr": "source.job_run_id",
+            "displayName": "Job Run Id"
+          },
+          {
+            "name": "recorded_at",
+            "expr": "source.recorded_at",
+            "displayName": "Recorded At"
+          },
+          {
+            "name": "catalog_name",
+            "expr": "source.catalog_name",
+            "displayName": "Catalog Name"
+          },
+          {
+            "name": "schema_name",
+            "expr": "source.schema_name",
+            "displayName": "Schema Name"
+          },
+          {
+            "name": "bundle_target",
+            "expr": "source.bundle_target",
+            "displayName": "Bundle Target"
+          },
+          {
+            "name": "git_sha",
+            "expr": "source.git_sha",
+            "displayName": "Git Sha"
+          },
+          {
+            "name": "overall_status",
+            "expr": "source.overall_status",
+            "displayName": "Overall Status"
+          },
+          {
+            "name": "failed_task_key",
+            "expr": "source.failed_task_key",
+            "displayName": "Failed Task Key"
+          },
+          {
+            "name": "failure_message",
+            "expr": "source.failure_message",
+            "displayName": "Failure Message"
+          },
+          {
+            "name": "started_at",
+            "expr": "source.started_at",
+            "displayName": "Started At"
+          },
+          {
+            "name": "completed_at",
+            "expr": "source.completed_at",
+            "displayName": "Completed At"
+          },
+          {
+            "name": "duration_seconds",
+            "expr": "source.duration_seconds",
+            "displayName": "Duration Seconds"
+          },
+          {
+            "name": "job_run_url",
+            "expr": "source.job_run_url",
+            "displayName": "Job Run Url"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "4b2fc3fb",
+      "displayName": "ops_current_status_v",
+      "config": {
+        "version": "1.1",
+        "source": "dataops_template.prod.ops_current_status_v",
+        "dimensions": [
+          {
+            "name": "job_run_id",
+            "expr": "source.job_run_id",
+            "displayName": "Job Run Id"
+          },
+          {
+            "name": "recorded_at",
+            "expr": "source.recorded_at",
+            "displayName": "Recorded At"
+          },
+          {
+            "name": "catalog_name",
+            "expr": "source.catalog_name",
+            "displayName": "Catalog Name"
+          },
+          {
+            "name": "schema_name",
+            "expr": "source.schema_name",
+            "displayName": "Schema Name"
+          },
+          {
+            "name": "bundle_target",
+            "expr": "source.bundle_target",
+            "displayName": "Bundle Target"
+          },
+          {
+            "name": "git_sha",
+            "expr": "source.git_sha",
+            "displayName": "Git Sha"
+          },
+          {
+            "name": "overall_status",
+            "expr": "source.overall_status",
+            "displayName": "Overall Status"
+          },
+          {
+            "name": "failed_task_key",
+            "expr": "source.failed_task_key",
+            "displayName": "Failed Task Key"
+          },
+          {
+            "name": "failure_message",
+            "expr": "source.failure_message",
+            "displayName": "Failure Message"
+          },
+          {
+            "name": "started_at",
+            "expr": "source.started_at",
+            "displayName": "Started At"
+          },
+          {
+            "name": "completed_at",
+            "expr": "source.completed_at",
+            "displayName": "Completed At"
+          },
+          {
+            "name": "duration_seconds",
+            "expr": "source.duration_seconds",
+            "displayName": "Duration Seconds"
+          },
+          {
+            "name": "job_run_url",
+            "expr": "source.job_run_url",
+            "displayName": "Job Run Url"
+          },
+          {
+            "name": "dashboard_status",
+            "expr": "source.dashboard_status",
+            "displayName": "Dashboard Status"
+          },
+          {
+            "name": "view_refreshed_at",
+            "expr": "source.view_refreshed_at",
+            "displayName": "View Refreshed At"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "b61ab3c4",
+      "displayName": "ops_contract_check_history_v",
+      "queryLines": [
+        "SELECT table_name, check_name, status, actual_value, expected_value, checked_at\n",
+        "FROM dataops_template.prod.ops_contract_check_history_v\n",
+        "WHERE checked_at = (SELECT MAX(checked_at) FROM dataops_template.prod.ops_contract_check_history_v)\n"
+      ]
+    },
+    {
+      "name": "ba11055f",
+      "displayName": "pipeline_checks_all",
+      "queryLines": [
+        "SELECT pipeline_name, check_name, status, message, checked_at, run_id\n",
+        "FROM dataops_template.prod.ops_pipeline_run_history_v\n",
+        "WHERE check_type = 'direct'\n",
+        "ORDER BY checked_at DESC\n"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "99160a97",
+      "displayName": "Current Status",
+      "layout": [
+        {
+          "widget": {
+            "name": "pipeline_status",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4b2fc3fb",
+                  "fields": [
+                    {
+                      "name": "dashboard_status",
+                      "expression": "`dashboard_status`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Pipeline Status",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "dashboard_status",
+                  "rowNumber": 1,
+                  "style": {
+                    "rules": [
+                      {
+                        "condition": {
+                          "operand": {
+                            "type": "data-value",
+                            "value": "GREEN"
+                          },
+                          "operator": "="
+                        },
+                        "color": "#4CAF50"
+                      },
+                      {
+                        "condition": {
+                          "operand": {
+                            "type": "data-value",
+                            "value": "YELLOW"
+                          },
+                          "operator": "="
+                        },
+                        "color": "#FFC107"
+                      },
+                      {
+                        "condition": {
+                          "operand": {
+                            "type": "data-value",
+                            "value": "RED"
+                          },
+                          "operator": "="
+                        },
+                        "color": "#F44336"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "last_run_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4b2fc3fb",
+                  "fields": [
+                    {
+                      "name": "overall_status",
+                      "expression": "`overall_status`"
+                    },
+                    {
+                      "name": "completed_at",
+                      "expression": "`completed_at`"
+                    },
+                    {
+                      "name": "duration_seconds",
+                      "expression": "`duration_seconds`"
+                    },
+                    {
+                      "name": "git_sha",
+                      "expression": "`git_sha`"
+                    },
+                    {
+                      "name": "failed_task_key",
+                      "expression": "`failed_task_key`"
+                    },
+                    {
+                      "name": "failure_message",
+                      "expression": "`failure_message`"
+                    },
+                    {
+                      "name": "job_run_url",
+                      "expression": "`job_run_url`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Last Run",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "overall_status",
+                    "displayName": "Status",
+                    "style": {
+                      "type": "basic",
+                      "rules": [
+                        {
+                          "condition": {
+                            "operand": {
+                              "type": "data-value",
+                              "value": "SUCCESS"
+                            },
+                            "operator": "="
+                          },
+                          "foregroundColor": "#4CAF50",
+                          "bold": true
+                        },
+                        {
+                          "condition": {
+                            "operand": {
+                              "type": "data-value",
+                              "value": "FAILED"
+                            },
+                            "operator": "="
+                          },
+                          "foregroundColor": "#F44336",
+                          "bold": true
+                        },
+                        {
+                          "condition": {
+                            "operand": {
+                              "type": "data-value",
+                              "value": "CANCELLED"
+                            },
+                            "operator": "="
+                          },
+                          "foregroundColor": "#FFC107",
+                          "bold": true
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "fieldName": "completed_at",
+                    "displayName": "Completed At"
+                  },
+                  {
+                    "fieldName": "duration_seconds",
+                    "displayName": "Duration (s)"
+                  },
+                  {
+                    "fieldName": "git_sha",
+                    "displayName": "Git SHA"
+                  },
+                  {
+                    "fieldName": "failed_task_key",
+                    "displayName": "Failed Task"
+                  },
+                  {
+                    "fieldName": "failure_message",
+                    "displayName": "Failure Message"
+                  },
+                  {
+                    "fieldName": "job_run_url",
+                    "displayName": "Job Run URL",
+                    "actions": {
+                      "click": {
+                        "type": "link",
+                        "urlTemplate": "{{ @ }}",
+                        "openInNewTab": true
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 12,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "pipeline_checks_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3d803090",
+                  "fields": [
+                    {
+                      "name": "pipeline_name",
+                      "expression": "`pipeline_name`"
+                    },
+                    {
+                      "name": "check_name",
+                      "expression": "`check_name`"
+                    },
+                    {
+                      "name": "status",
+                      "expression": "`status`"
+                    },
+                    {
+                      "name": "message",
+                      "expression": "`message`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Pipeline Checks",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "pipeline_name",
+                    "displayName": "Pipeline"
+                  },
+                  {
+                    "fieldName": "check_name",
+                    "displayName": "Check"
+                  },
+                  {
+                    "fieldName": "status",
+                    "displayName": "Status",
+                    "style": {
+                      "type": "basic",
+                      "rules": [
+                        {
+                          "condition": {
+                            "operand": {
+                              "type": "data-value",
+                              "value": "PASS"
+                            },
+                            "operator": "="
+                          },
+                          "foregroundColor": "#4CAF50",
+                          "bold": true
+                        },
+                        {
+                          "condition": {
+                            "operand": {
+                              "type": "data-value",
+                              "value": "FAIL"
+                            },
+                            "operator": "="
+                          },
+                          "foregroundColor": "#F44336",
+                          "bold": true
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "fieldName": "message",
+                    "displayName": "Message"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 12,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "contract_checks_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "b61ab3c4",
+                  "fields": [
+                    {
+                      "name": "table_name",
+                      "expression": "`table_name`"
+                    },
+                    {
+                      "name": "check_name",
+                      "expression": "`check_name`"
+                    },
+                    {
+                      "name": "status",
+                      "expression": "`status`"
+                    },
+                    {
+                      "name": "actual_value",
+                      "expression": "`actual_value`"
+                    },
+                    {
+                      "name": "expected_value",
+                      "expression": "`expected_value`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Contract Checks",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "table_name",
+                    "displayName": "Table"
+                  },
+                  {
+                    "fieldName": "check_name",
+                    "displayName": "Check"
+                  },
+                  {
+                    "fieldName": "status",
+                    "displayName": "Status",
+                    "style": {
+                      "type": "basic",
+                      "rules": [
+                        {
+                          "condition": {
+                            "operand": {
+                              "type": "data-value",
+                              "value": "PASS"
+                            },
+                            "operator": "="
+                          },
+                          "foregroundColor": "#4CAF50",
+                          "bold": true
+                        },
+                        {
+                          "condition": {
+                            "operand": {
+                              "type": "data-value",
+                              "value": "FAIL"
+                            },
+                            "operator": "="
+                          },
+                          "foregroundColor": "#F44336",
+                          "bold": true
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "fieldName": "actual_value",
+                    "displayName": "Actual"
+                  },
+                  {
+                    "fieldName": "expected_value",
+                    "displayName": "Expected"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 13,
+            "width": 12,
+            "height": 5
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "7d439207",
+      "displayName": "Run History",
+      "layout": [
+        {
+          "widget": {
+            "name": "job_run_history_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "154c2b71",
+                  "fields": [
+                    {
+                      "name": "overall_status",
+                      "expression": "`overall_status`"
+                    },
+                    {
+                      "name": "started_at",
+                      "expression": "`started_at`"
+                    },
+                    {
+                      "name": "completed_at",
+                      "expression": "`completed_at`"
+                    },
+                    {
+                      "name": "duration_seconds",
+                      "expression": "`duration_seconds`"
+                    },
+                    {
+                      "name": "git_sha",
+                      "expression": "`git_sha`"
+                    },
+                    {
+                      "name": "failed_task_key",
+                      "expression": "`failed_task_key`"
+                    },
+                    {
+                      "name": "job_run_url",
+                      "expression": "`job_run_url`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Job Run History",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "overall_status",
+                    "displayName": "Status",
+                    "style": {
+                      "type": "basic",
+                      "rules": [
+                        {
+                          "condition": {
+                            "operand": {
+                              "type": "data-value",
+                              "value": "SUCCESS"
+                            },
+                            "operator": "="
+                          },
+                          "foregroundColor": "#4CAF50",
+                          "bold": true
+                        },
+                        {
+                          "condition": {
+                            "operand": {
+                              "type": "data-value",
+                              "value": "FAILED"
+                            },
+                            "operator": "="
+                          },
+                          "foregroundColor": "#F44336",
+                          "bold": true
+                        },
+                        {
+                          "condition": {
+                            "operand": {
+                              "type": "data-value",
+                              "value": "CANCELLED"
+                            },
+                            "operator": "="
+                          },
+                          "foregroundColor": "#FFC107",
+                          "bold": true
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "fieldName": "started_at",
+                    "displayName": "Started At"
+                  },
+                  {
+                    "fieldName": "completed_at",
+                    "displayName": "Completed At"
+                  },
+                  {
+                    "fieldName": "duration_seconds",
+                    "displayName": "Duration (s)"
+                  },
+                  {
+                    "fieldName": "git_sha",
+                    "displayName": "Git SHA"
+                  },
+                  {
+                    "fieldName": "failed_task_key",
+                    "displayName": "Failed Task"
+                  },
+                  {
+                    "fieldName": "job_run_url",
+                    "displayName": "Job Run URL",
+                    "actions": {
+                      "click": {
+                        "type": "link",
+                        "urlTemplate": "{{ @ }}",
+                        "openInNewTab": true
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "run_duration_chart",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "154c2b71",
+                  "fields": [
+                    {
+                      "name": "completed_at",
+                      "expression": "`completed_at`"
+                    },
+                    {
+                      "name": "duration_seconds",
+                      "expression": "`duration_seconds`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Run Duration (seconds)",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "completed_at",
+                  "displayName": "Completed At",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "duration_seconds",
+                  "displayName": "Duration (s)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 12,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}

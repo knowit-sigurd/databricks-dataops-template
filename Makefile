@@ -1,5 +1,8 @@
 .PHONY: help lint test pipeline-run should-deploy deploy-dev deploy-pr destroy-pr deploy-prod run-dev run-pr run-prod upload-sample-data-dev upload-sample-data-pr upload-sample-data-prod create-schema-pr create-schema-prod
 
+-include .env
+export
+
 PIPELINE_PYTHON := $(shell pwd)/.venv/bin/python3
 PIPELINE_RUNNER := $(shell pwd)/.venv/bin/spark-pipelines
 
@@ -12,7 +15,7 @@ help:
 	@echo "  pipeline-run PIPELINE=<name>  Run a pipeline locally via spark-pipelines"
 	@echo "  should-deploy                 Print true/false based on changed files (requires CI_PROVIDER)"
 	@echo ""
-	@echo "Dev target"
+	@echo "Dev target  (requires DATABRICKS_WAREHOUSE_ID=<id>)"
 	@echo "  deploy-dev                    Bundle deploy to dev target"
 	@echo "  run-dev                       Run operational job in dev"
 	@echo "  upload-sample-data-dev        Upload sample fixtures to dev UC Volume"
@@ -24,7 +27,7 @@ help:
 	@echo "  upload-sample-data-pr         Upload sample fixtures to pr UC Volume"
 	@echo "  destroy-pr                    Destroy pr bundle, volumes, and schema"
 	@echo ""
-	@echo "Prod target  (requires DATABRICKS_SP_CLIENT_ID=<uuid>)"
+	@echo "Prod target  (requires DATABRICKS_SP_CLIENT_ID=<uuid> DATABRICKS_WAREHOUSE_ID=<id>)"
 	@echo "  create-schema-prod            Create prod schema in UC"
 	@echo "  deploy-prod                   Bundle deploy to prod target"
 	@echo "  run-prod                      Run operational job in prod"
@@ -74,7 +77,10 @@ upload-sample-data-prod:
 	databricks fs cp --recursive data/sample/orders/ dbfs:/Volumes/$(CATALOG)/prod/orders_raw/ --overwrite
 
 deploy-dev:
-	databricks bundle deploy --target dev
+ifndef DATABRICKS_WAREHOUSE_ID
+	$(error DATABRICKS_WAREHOUSE_ID is required. Usage: make deploy-dev DATABRICKS_WAREHOUSE_ID=<id>)
+endif
+	databricks bundle deploy --target dev --var dashboard_warehouse_id=$(DATABRICKS_WAREHOUSE_ID)
 
 deploy-pr:
 ifndef PR_NUMBER
@@ -95,7 +101,10 @@ deploy-prod:
 ifndef DATABRICKS_SP_CLIENT_ID
 	$(error DATABRICKS_SP_CLIENT_ID is required. Usage: make deploy-prod DATABRICKS_SP_CLIENT_ID=<uuid>)
 endif
-	databricks bundle deploy --target prod --var sp_client_id=$(DATABRICKS_SP_CLIENT_ID)
+ifndef DATABRICKS_WAREHOUSE_ID
+	$(error DATABRICKS_WAREHOUSE_ID is required. Usage: make deploy-prod DATABRICKS_SP_CLIENT_ID=<uuid> DATABRICKS_WAREHOUSE_ID=<id>)
+endif
+	databricks bundle deploy --target prod --var sp_client_id=$(DATABRICKS_SP_CLIENT_ID) --var dashboard_warehouse_id=$(DATABRICKS_WAREHOUSE_ID)
 
 run-dev:
 	databricks bundle run --target dev data_product_operational_job
@@ -110,4 +119,7 @@ run-prod:
 ifndef DATABRICKS_SP_CLIENT_ID
 	$(error DATABRICKS_SP_CLIENT_ID is required. Usage: make run-prod DATABRICKS_SP_CLIENT_ID=<uuid>)
 endif
-	databricks bundle run --target prod --var sp_client_id=$(DATABRICKS_SP_CLIENT_ID) data_product_operational_job
+ifndef DATABRICKS_WAREHOUSE_ID
+	$(error DATABRICKS_WAREHOUSE_ID is required. Usage: make run-prod DATABRICKS_SP_CLIENT_ID=<uuid> DATABRICKS_WAREHOUSE_ID=<id>)
+endif
+	databricks bundle run --target prod --var sp_client_id=$(DATABRICKS_SP_CLIENT_ID) --var dashboard_warehouse_id=$(DATABRICKS_WAREHOUSE_ID) data_product_operational_job
