@@ -74,6 +74,7 @@ try:
                 SELECT COUNT(*) AS cnt
                 FROM {warn_table}
                 WHERE status = 'WARN'
+                AND check_type = 'direct'
                 AND checked_at >= '{started_str}'
             """).collect()[0]["cnt"]
             if warn_count > 0:
