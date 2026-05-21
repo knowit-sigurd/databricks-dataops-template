@@ -1,7 +1,7 @@
 resources:
   pipelines:
     gold_pipeline:
-      name: "[${var.catalog}] [${var.target_schema}] gold_pipeline"
+      name: "[${var.target_schema}] gold_pipeline"
       catalog: ${var.catalog}
       target: ${var.target_schema}
       serverless: true
