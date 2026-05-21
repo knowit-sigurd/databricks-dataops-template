@@ -15,6 +15,9 @@ variables:
   quality_mode:
     description: "Expectation mode for business_invalid rules: drop (dev/pr) or fail (prod)"
     default: drop
+  dashboard_warehouse_id:
+    description: SQL warehouse ID used by the operations dashboard (dev and prod only)
+    default: ""
 
 workspace:
   root_path: ~/databricks-dataops-template/${bundle.target}/${bundle.git.branch}

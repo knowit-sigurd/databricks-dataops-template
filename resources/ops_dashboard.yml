@@ -1,0 +1,28 @@
+targets:
+  dev:
+    resources:
+      dashboards:
+        data_product_operations:
+          display_name: "[${var.target_schema}] data_product_operations"
+          file_path: ../dashboards/data_product_operations.lvdash.json
+          warehouse_id: ${var.dashboard_warehouse_id}
+          embed_credentials: false
+          dataset_catalog: ${var.catalog}
+          dataset_schema: ${var.target_schema}
+          permissions:
+            - level: CAN_VIEW
+              group_name: data-operators
+
+  prod:
+    resources:
+      dashboards:
+        data_product_operations:
+          display_name: "[${var.target_schema}] data_product_operations"
+          file_path: ../dashboards/data_product_operations.lvdash.json
+          warehouse_id: ${var.dashboard_warehouse_id}
+          embed_credentials: false
+          dataset_catalog: ${var.catalog}
+          dataset_schema: prod
+          permissions:
+            - level: CAN_VIEW
+              group_name: data-operators
