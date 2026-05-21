@@ -70,8 +70,11 @@ databricks jobs list --output json | jq '.[] | select(.settings.name | contains(
 # Find the failed run ID
 databricks jobs list-runs --job-id <job-id> --output json | jq '.[0].run_id'
 
-# Repair: retry failed and skipped tasks only
-databricks jobs repair-run --job-id <job-id> --run-id <run-id> --rerun-all-failed-tasks
+# Repair: retry failed and skipped tasks only (run-id is positional)
+databricks jobs repair-run <run-id> --rerun-all-failed-tasks
+
+# Alternative: JSON form
+databricks jobs repair-run --json '{"run_id": <run-id>, "rerun_all_failed_tasks": true}'
 ```
 
 **Repair vs full restart:**

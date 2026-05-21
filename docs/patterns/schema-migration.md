@@ -38,7 +38,7 @@ databricks pipelines start --pipeline-id <customers-pipeline-id> \
 
 **No full refresh required — materialized views rebuild automatically.**
 
-Gold uses `@dp.materialized_view`, which is always rebuilt from source on each pipeline update. Add the column to the gold transformation and deploy — the column appears on the next run without any manual refresh.
+Gold uses `@dp.materialized_view`. Databricks refreshes it as part of the pipeline update — attempting incremental refresh when the query supports it, or full recompute otherwise. Add the column to the gold transformation and deploy — no manual refresh needed for additive column changes.
 
 Notify downstream consumers before deploying. Gold is a published contract — adding a column is additive and non-breaking, but consumers may need to update their queries.
 
