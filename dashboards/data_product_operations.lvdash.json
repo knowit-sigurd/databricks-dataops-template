@@ -246,7 +246,7 @@
                         "condition": {
                           "operand": {
                             "type": "data-value",
-                            "value": "GREEN"
+                            "value": "HEALTHY"
                           },
                           "operator": "="
                         },
@@ -256,7 +256,7 @@
                         "condition": {
                           "operand": {
                             "type": "data-value",
-                            "value": "YELLOW"
+                            "value": "WARNING"
                           },
                           "operator": "="
                         },
@@ -266,7 +266,7 @@
                         "condition": {
                           "operand": {
                             "type": "data-value",
-                            "value": "RED"
+                            "value": "FAILED"
                           },
                           "operator": "="
                         },

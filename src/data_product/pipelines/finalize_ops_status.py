@@ -143,13 +143,13 @@ _views = {
             git_sha, overall_status, failed_task_key, failure_message,
             started_at, completed_at, duration_seconds, job_run_url,
             CASE
-                WHEN overall_status = 'FAILED'  THEN 'RED'
-                WHEN overall_status = 'WARNING' THEN 'YELLOW'
+                WHEN overall_status = 'FAILED'  THEN 'FAILED'
+                WHEN overall_status = 'WARNING' THEN 'WARNING'
                 WHEN overall_status = 'SUCCESS'
                      AND (unix_timestamp(current_timestamp())
                           - unix_timestamp(completed_at)) / 3600 > 48
                                                 THEN 'STALE'
-                WHEN overall_status = 'SUCCESS' THEN 'GREEN'
+                WHEN overall_status = 'SUCCESS' THEN 'HEALTHY'
                 ELSE 'UNKNOWN'
             END AS dashboard_status,
             current_timestamp() AS view_refreshed_at
