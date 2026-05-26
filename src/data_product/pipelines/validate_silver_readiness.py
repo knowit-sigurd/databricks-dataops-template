@@ -4,7 +4,14 @@ from datetime import datetime, timezone
 
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
-from pyspark.sql.types import ArrayType, LongType, StringType, StructField, StructType, TimestampType
+from pyspark.sql.types import (
+    ArrayType,
+    LongType,
+    StringType,
+    StructField,
+    StructType,
+    TimestampType,
+)
 
 spark = SparkSession.builder.getOrCreate()
 
