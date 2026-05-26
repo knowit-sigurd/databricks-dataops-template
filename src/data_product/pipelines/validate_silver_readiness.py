@@ -4,7 +4,14 @@ from datetime import datetime, timezone
 
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
-from pyspark.sql.types import StringType, StructField, StructType, TimestampType
+from pyspark.sql.types import (
+    ArrayType,
+    LongType,
+    StringType,
+    StructField,
+    StructType,
+    TimestampType,
+)
 
 spark = SparkSession.builder.getOrCreate()
 
@@ -102,6 +109,15 @@ for domain, pipeline_name in [("customers", "customers_pipeline"), ("orders", "o
 
 # --- event_log() enrichment (informational — failure here does not block gold) ---
 
+# details column in event_log() is STRING (JSON) in current DLT runtime — use
+# get_json_object / from_json rather than struct dot notation.
+_EXPECTATION_SCHEMA = ArrayType(StructType([
+    StructField("name", StringType()),
+    StructField("dataset", StringType()),
+    StructField("passed_records", LongType()),
+    StructField("failed_records", LongType()),
+]))
+
 for pipeline_name, pipeline_id in [
     ("customers_pipeline", customers_pipeline_id),
     ("orders_pipeline", orders_pipeline_id),
@@ -113,7 +129,9 @@ for pipeline_name, pipeline_id in [
             event_df
             .filter("event_type = 'create_update'")
             .orderBy(F.col("timestamp").desc())
-            .select(F.col("details.create_update.update_id"))
+            .select(
+                F.get_json_object(F.col("details"), "$.create_update.update_id").alias("update_id")
+            )
             .limit(1)
             .collect()
         )
@@ -127,10 +145,14 @@ for pipeline_name, pipeline_id in [
         expectations = (
             event_df
             .filter(f"origin.update_id = '{update_id}' AND event_type = 'flow_progress'")
-            .filter("details.flow_progress.data_quality IS NOT NULL")
+            .withColumn(
+                "_exps_json",
+                F.get_json_object(F.col("details"), "$.flow_progress.data_quality.expectations"),
+            )
+            .filter(F.col("_exps_json").isNotNull())
             .select(
                 F.col("origin.flow_name").alias("flow_name"),
-                F.explode("details.flow_progress.data_quality.expectations").alias("exp"),
+                F.explode(F.from_json(F.col("_exps_json"), _EXPECTATION_SCHEMA)).alias("exp"),
             )
             .select(
                 "flow_name",
@@ -155,8 +177,12 @@ for pipeline_name, pipeline_id in [
             record(pipeline_name, row["expectation_name"], "expectation", status, msg)
 
     except Exception as e:
-        record(pipeline_name, "event_log_enrichment", "expectation", "WARN",
-               f"event_log() unavailable (pipeline ownership required): {e}")
+        err_str = str(e)
+        if "PERMISSION_DENIED" in err_str or "ownership" in err_str.lower():
+            msg = "event_log() unavailable — pipeline ownership required"
+        else:
+            msg = f"event_log() query failed: {err_str[:200]}"
+        record(pipeline_name, "event_log_enrichment", "expectation", "WARN", msg)
 
 
 # --- Print results to notebook output ---
