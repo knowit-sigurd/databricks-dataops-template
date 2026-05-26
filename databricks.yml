@@ -58,6 +58,8 @@ targets:
     mode: production
     git:
       branch: main
+    workspace:
+      root_path: /Shared/databricks-dataops-template/${bundle.git.branch}
     variables:
       target_schema: prod
       quality_mode: fail
