@@ -1,4 +1,4 @@
-.PHONY: help lint test pipeline-run should-deploy deploy-dev deploy-pr destroy-pr deploy-prod run-dev run-pr run-prod upload-sample-data-dev upload-sample-data-pr upload-sample-data-prod create-schema-pr create-schema-prod
+.PHONY: help lint test pipeline-run should-deploy deploy-dev deploy-pr destroy-pr deploy-prod run-dev run-pr run-prod upload-sample-data-dev upload-sample-data-pr upload-sample-data-prod create-schema-pr create-schema-prod dashboard-export
 
 -include .env
 export
@@ -14,6 +14,7 @@ help:
 	@echo "  test                          Run pytest against local Spark"
 	@echo "  pipeline-run PIPELINE=<name>  Run a pipeline locally via spark-pipelines"
 	@echo "  should-deploy                 Print true/false based on changed files (requires CI_PROVIDER)"
+	@echo "  dashboard-export DASHBOARD_ID=<id>  Export published dashboard back to repo JSON"
 	@echo ""
 	@echo "Dev target  (requires DATABRICKS_WAREHOUSE_ID=<id>)"
 	@echo "  deploy-dev                    Bundle deploy to dev target"
@@ -50,6 +51,15 @@ endif
 
 should-deploy:
 	@uv run python scripts/changed_files.py
+
+dashboard-export:
+ifndef DASHBOARD_ID
+	$(error DASHBOARD_ID is required. Find it in the dashboard URL, or: databricks lakeview list | jq -r '.[] | [.dashboard_id, .display_name] | @tsv')
+endif
+	databricks lakeview get $(DASHBOARD_ID) \
+		| jq -r '.serialized_dashboard' \
+		> dashboards/data_product_operations.lvdash.json
+	@echo "Exported → dashboards/data_product_operations.lvdash.json"
 
 create-schema-pr:
 ifndef PR_NUMBER

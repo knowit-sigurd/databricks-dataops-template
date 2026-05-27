@@ -8,11 +8,15 @@
         "FROM dataops_template.prod.ops_pipeline_run_history_v\n",
         "WHERE check_type = 'direct'\n",
         "  AND run_id = (SELECT MAX(run_id) FROM dataops_template.prod.ops_pipeline_run_history_v)\n"
-      ]
+      ],
+      "catalog": "dataops_template",
+      "schema": "prod"
     },
     {
       "name": "154c2b71",
       "displayName": "ops_run_history_v",
+      "catalog": "dataops_template",
+      "schema": "prod",
       "config": {
         "version": "1.1",
         "source": "dataops_template.prod.ops_run_history_v",
@@ -96,6 +100,8 @@
     {
       "name": "4b2fc3fb",
       "displayName": "ops_current_status_v",
+      "catalog": "dataops_template",
+      "schema": "prod",
       "config": {
         "version": "1.1",
         "source": "dataops_template.prod.ops_current_status_v",
@@ -193,7 +199,9 @@
         "SELECT table_name, check_name, status, actual_value, expected_value, checked_at\n",
         "FROM dataops_template.prod.ops_contract_check_history_v\n",
         "WHERE checked_at = (SELECT MAX(checked_at) FROM dataops_template.prod.ops_contract_check_history_v)\n"
-      ]
+      ],
+      "catalog": "dataops_template",
+      "schema": "prod"
     },
     {
       "name": "ba11055f",
@@ -203,7 +211,9 @@
         "FROM dataops_template.prod.ops_pipeline_run_history_v\n",
         "WHERE check_type = 'direct'\n",
         "ORDER BY checked_at DESC\n"
-      ]
+      ],
+      "catalog": "dataops_template",
+      "schema": "prod"
     },
     {
       "name": "reliability_7d",
@@ -214,7 +224,9 @@
         "  COUNT(*) || ' runs succeeded' AS reliability\n",
         "FROM dataops_template.prod.ops_run_history_v\n",
         "WHERE started_at >= current_date - INTERVAL 7 DAYS\n"
-      ]
+      ],
+      "catalog": "dataops_template",
+      "schema": "prod"
     },
     {
       "name": "last_success",
@@ -225,7 +237,9 @@
         "WHERE overall_status = 'SUCCESS'\n",
         "ORDER BY completed_at DESC\n",
         "LIMIT 1\n"
-      ]
+      ],
+      "catalog": "dataops_template",
+      "schema": "prod"
     }
   ],
   "pages": [
@@ -303,8 +317,8 @@
           "position": {
             "x": 0,
             "y": 0,
-            "width": 8,
-            "height": 4
+            "width": 4,
+            "height": 1
           }
         },
         {
@@ -437,9 +451,9 @@
           },
           "position": {
             "x": 0,
-            "y": 4,
-            "width": 8,
-            "height": 4
+            "y": 1,
+            "width": 12,
+            "height": 2
           }
         },
         {
@@ -531,8 +545,8 @@
           "position": {
             "x": 0,
             "y": 8,
-            "width": 6,
-            "height": 5
+            "width": 12,
+            "height": 4
           }
         },
         {
@@ -630,10 +644,10 @@
             }
           },
           "position": {
-            "x": 6,
-            "y": 8,
-            "width": 6,
-            "height": 5
+            "x": 0,
+            "y": 4,
+            "width": 12,
+            "height": 4
           }
         },
         {
@@ -670,10 +684,10 @@
             }
           },
           "position": {
-            "x": 8,
-            "y": 0,
-            "width": 4,
-            "height": 4
+            "x": 0,
+            "y": 3,
+            "width": 12,
+            "height": 1
           }
         },
         {
@@ -710,10 +724,10 @@
             }
           },
           "position": {
-            "x": 8,
-            "y": 4,
-            "width": 4,
-            "height": 4
+            "x": 4,
+            "y": 0,
+            "width": 8,
+            "height": 1
           }
         }
       ],
@@ -854,9 +868,9 @@
           },
           "position": {
             "x": 0,
-            "y": 6,
+            "y": 4,
             "width": 12,
-            "height": 8
+            "height": 6
           }
         },
         {
@@ -873,11 +887,11 @@
                       "expression": "`completed_at`"
                     },
                     {
-                      "name": "duration_seconds",
-                      "expression": "`duration_seconds`"
+                      "name": "sum(duration_seconds)",
+                      "expression": "SUM(`duration_seconds`)"
                     }
                   ],
-                  "disaggregated": true
+                  "disaggregated": false
                 }
               }
             ],
@@ -887,18 +901,16 @@
                 "title": "Run Duration (seconds)",
                 "showTitle": true
               },
-              "widgetType": "bar",
+              "widgetType": "area",
               "encodings": {
                 "x": {
                   "fieldName": "completed_at",
-                  "displayName": "Completed At",
                   "scale": {
                     "type": "temporal"
                   }
                 },
                 "y": {
-                  "fieldName": "duration_seconds",
-                  "displayName": "Duration (s)",
+                  "fieldName": "sum(duration_seconds)",
                   "scale": {
                     "type": "quantitative"
                   }
@@ -910,7 +922,7 @@
             "x": 0,
             "y": 0,
             "width": 12,
-            "height": 6
+            "height": 4
           }
         }
       ],
@@ -925,3 +937,4 @@
     "applyModeEnabled": false
   }
 }
+
