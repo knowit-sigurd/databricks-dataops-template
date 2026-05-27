@@ -90,7 +90,7 @@ deploy-dev:
 ifndef DATABRICKS_WAREHOUSE_ID
 	$(error DATABRICKS_WAREHOUSE_ID is required. Usage: make deploy-dev DATABRICKS_WAREHOUSE_ID=<id>)
 endif
-	databricks bundle deploy --target dev --var dashboard_warehouse_id=$(DATABRICKS_WAREHOUSE_ID)
+	databricks bundle deploy --target dev --var dashboard_warehouse_id=$(DATABRICKS_WAREHOUSE_ID) --force
 
 deploy-pr:
 ifndef PR_NUMBER
@@ -114,7 +114,7 @@ endif
 ifndef DATABRICKS_WAREHOUSE_ID
 	$(error DATABRICKS_WAREHOUSE_ID is required. Usage: make deploy-prod DATABRICKS_SP_CLIENT_ID=<uuid> DATABRICKS_WAREHOUSE_ID=<id>)
 endif
-	databricks bundle deploy --target prod --var sp_client_id=$(DATABRICKS_SP_CLIENT_ID) --var dashboard_warehouse_id=$(DATABRICKS_WAREHOUSE_ID)
+	databricks bundle deploy --target prod --var sp_client_id=$(DATABRICKS_SP_CLIENT_ID) --var dashboard_warehouse_id=$(DATABRICKS_WAREHOUSE_ID) --force
 
 run-dev:
 	databricks bundle run --target dev data_product_operational_job
