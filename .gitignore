@@ -11,3 +11,4 @@ derby.log
 spark-warehouse/
 metastore_db/
 .env
+.vscode
