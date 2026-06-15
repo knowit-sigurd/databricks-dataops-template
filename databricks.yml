@@ -1,11 +1,10 @@
 bundle:
   name: databricks-dataops-template
   databricks_cli_version: ">= 0.240.0"
-  # Pin the deploy engine. CLI v1.3.0 flipped the default from terraform to
-  # `direct`, which breaks the --editable ${workspace.file_path} source upload
-  # the pipelines import data_product from. Declared explicitly so deploy
-  # behaviour is deterministic across CLI versions. Direct-engine migration
-  # is a tracked follow-up.
+  # Pin the deploy engine. CLI v1.3.0 made `direct` the default; this bundle was
+  # only ever validated on `terraform`. Declared explicitly so deploy behaviour
+  # is deterministic across CLI versions rather than riding a floating default.
+  # Migrating to the direct engine is a tracked follow-up (needs a live test).
   engine: terraform
 
 variables:
@@ -39,6 +38,12 @@ presets:
     project: databricks-dataops-template
     target: ${bundle.target}
     git_branch: ${bundle.git.branch}
+
+artifacts:
+  data_product_wheel:
+    type: whl
+    build: uv build --wheel
+    path: .
 
 include:
   - resources/*.yml

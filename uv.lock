@@ -259,29 +259,25 @@ wheels = [
 name = "databricks-dataops-template"
 version = "0.1.0"
 source = { editable = "." }
-dependencies = [
-    { name = "databricks-bundles" },
-    { name = "databricks-sdk" },
-    { name = "pyspark", extra = ["pipelines"] },
-]
 
 [package.dev-dependencies]
 dev = [
+    { name = "databricks-bundles" },
+    { name = "databricks-sdk" },
     { name = "pandas" },
+    { name = "pyspark", extra = ["pipelines"] },
     { name = "pytest" },
     { name = "ruff" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "databricks-bundles", specifier = ">=0.299.2" },
-    { name = "databricks-sdk", specifier = ">=0.109.0" },
-    { name = "pyspark", extras = ["pipelines"], specifier = ">=4.1.1" },
-]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "databricks-bundles", specifier = ">=0.299.2" },
+    { name = "databricks-sdk", specifier = ">=0.109.0" },
     { name = "pandas", specifier = ">=3.0.3" },
+    { name = "pyspark", extras = ["pipelines"], specifier = ">=4.1.1" },
     { name = "pytest", specifier = ">=9.0.3" },
     { name = "ruff", specifier = ">=0.15.13" },
 ]

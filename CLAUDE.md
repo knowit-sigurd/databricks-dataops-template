@@ -28,7 +28,11 @@ Do not propose alternatives to these.
 
 **Pipeline library type is `file:`, not `notebook:`** — `.py` source files in pipeline resources use `libraries: - file: path: ...`. `notebook:` expects an `.ipynb` or Databricks notebook format and will reject plain Python files.
 
-**`environment.dependencies: - --editable ${workspace.file_path}`** on every pipeline resource — makes the `data_product` package importable in the DLT runtime. DABs uploads the source tree to `${workspace.file_path}` on deploy; the editable install reads the package from there. No wheel build required. Requires `[build-system]` (hatchling) in `pyproject.toml` and `[tool.hatch.build.targets.wheel] packages = ["src/data_product"]`.
+**`data_product` reaches the DLT runtime as a built wheel, not an editable install.** Each pipeline resource declares `environment.dependencies: - ../dist/*.whl` (relative path resolves to the bundle-root `dist/`). A top-level `artifacts.data_product_wheel` block (`type: whl`, `build: uv build --wheel`, `path: .`) builds the wheel on `bundle deploy`; DABs uploads it and rewrites the dependency to the workspace artifact path. Requires `[build-system]` (hatchling) in `pyproject.toml` and `[tool.hatch.build.targets.wheel] packages = ["src/data_product"]` (maps `src/data_product` → import name `data_product`).
+
+`[project].dependencies` must stay **empty** so the wheel carries no `Requires-Dist`: serverless DLT provides pyspark, and the notebook tasks get pyspark/databricks-sdk from their job compute. pyspark/databricks-sdk/databricks-bundles live in `[dependency-groups].dev` for local dev, tests, and the deploy-time mutators only.
+
+History: the original pattern was `--editable ${workspace.file_path}`. It silently stopped making `data_product` importable on serverless DLT (config correct, source uploaded, but the runtime editable build/`.pth` was not effective). Switched to the wheel artifact 2026-06-15 — a plain wheel lands `data_product` directly in site-packages, no `/Workspace` mount or runtime editable build, and no third-party dependency closure resolved at pipeline runtime.
 
 **`@dp.table` stubs use a rate stream filtered to zero rows** — `createDataFrame()` returns a batch relation which DLT rejects for streaming tables. Pattern:
 ```python

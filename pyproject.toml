@@ -2,14 +2,19 @@
 name = "databricks-dataops-template"
 version = "0.1.0"
 requires-python = ">=3.11"
-dependencies = [
-    "databricks-sdk>=0.109.0",
-    "pyspark[pipelines]>=4.1.1",
-    "databricks-bundles>=0.299.2",
-]
+# No runtime dependencies: the data_product wheel is installed into the
+# serverless DLT pipeline environment, which already provides pyspark. The
+# notebook tasks (validate_*, finalize_ops_status) get pyspark/databricks-sdk
+# from their job compute. databricks-bundles is a deploy-time tool only.
+# Keeping these out of [project] means the wheel carries no Requires-Dist, so
+# the pipeline env installs nothing beyond data_product itself.
+dependencies = []
 
 [dependency-groups]
 dev = [
+    "databricks-sdk>=0.109.0",
+    "databricks-bundles>=0.299.2",
+    "pyspark[pipelines]>=4.1.1",
     "pandas>=3.0.3",
     "pytest>=9.0.3",
     "ruff>=0.15.13",

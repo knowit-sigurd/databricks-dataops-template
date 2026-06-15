@@ -17,4 +17,4 @@ resources:
 
       environment:
         dependencies:
-          - --editable ${workspace.file_path}
+          - ../dist/*.whl
