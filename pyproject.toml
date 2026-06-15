@@ -4,7 +4,7 @@ version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
     "databricks-sdk>=0.109.0",
-    "pyspark[pipelines]>=4.1.1",
+    "pyspark[pipelines]>=4.1.2",
     "databricks-bundles>=0.299.2",
 ]
 
