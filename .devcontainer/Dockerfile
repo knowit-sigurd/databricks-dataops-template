@@ -64,7 +64,7 @@ RUN curl -fsSL https://github.com/mikefarah/yq/releases/download/v4.44.1/yq_linu
 
 ARG SPARK_VERSION=4.1.1
 ARG HADOOP_FLAVOR=hadoop3
-RUN wget -q https://downloads.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-${HADOOP_FLAVOR}.tgz \
+RUN wget -q https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-${HADOOP_FLAVOR}.tgz \
     && tar -xzf spark-${SPARK_VERSION}-bin-${HADOOP_FLAVOR}.tgz \
     && mv spark-${SPARK_VERSION}-bin-${HADOOP_FLAVOR} /opt/spark \
     && rm spark-${SPARK_VERSION}-bin-${HADOOP_FLAVOR}.tgz \

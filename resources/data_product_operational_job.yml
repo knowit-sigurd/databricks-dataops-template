@@ -19,14 +19,12 @@ resources:
 
       tasks:
         - task_key: run_customers
-          max_retries: 1
-          min_retry_interval_millis: 60000
+          max_retries: 0
           pipeline_task:
             pipeline_id: ${resources.pipelines.customers_pipeline.id}
 
         - task_key: run_orders
-          max_retries: 1
-          min_retry_interval_millis: 60000
+          max_retries: 0
           pipeline_task:
             pipeline_id: ${resources.pipelines.orders_pipeline.id}
 
@@ -47,8 +45,7 @@ resources:
         - task_key: run_gold
           depends_on:
             - task_key: validate_silver_readiness
-          max_retries: 1
-          min_retry_interval_millis: 60000
+          max_retries: 0
           pipeline_task:
             pipeline_id: ${resources.pipelines.gold_pipeline.id}
 
