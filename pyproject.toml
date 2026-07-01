@@ -16,7 +16,7 @@ dev = [
     "databricks-bundles>=0.299.2",
     "pyspark[pipelines]>=4.1.1",
     "pandas>=3.0.3",
-    "pytest>=9.0.3",
+    "pytest>=9.1.1",
     "ruff>=0.15.15",
 ]
 
