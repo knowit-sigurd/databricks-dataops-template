@@ -12,7 +12,7 @@ dependencies = []
 
 [dependency-groups]
 dev = [
-    "databricks-sdk>=0.109.0",
+    "databricks-sdk>=0.119.0",
     "databricks-bundles>=0.299.2",
     "pyspark[pipelines]>=4.1.1",
     "pandas>=3.0.3",
