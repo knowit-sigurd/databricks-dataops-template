@@ -25,7 +25,7 @@ jobs:
       PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
       CATALOG: ${{ vars.CATALOG || 'dataops_template' }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Fix detached HEAD
         run: git checkout -B ${{ github.head_ref || inputs.branch }}

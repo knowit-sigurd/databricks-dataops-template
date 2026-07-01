@@ -24,7 +24,7 @@ jobs:
       DATABRICKS_WAREHOUSE_ID: ${{ secrets.DATABRICKS_WAREHOUSE_ID }}
       CATALOG: ${{ vars.CATALOG || 'dataops_template' }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Fix detached HEAD
         run: git checkout -B ${{ github.ref_name }}
